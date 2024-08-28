@@ -1,6 +1,6 @@
-# projetomobile
+# App Vision+
 
-A new Flutter project.
+App para auxiliar pessoas com baixa visão em supermercados.
 
 ## Getting Started
 
