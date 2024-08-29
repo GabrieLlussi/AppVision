@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'produtos/produto_page.dart';
 
 void main() {
   runApp(MyApp());
@@ -14,12 +15,12 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomeScreen(),
+      home: HomePage(),
     );
   }
 }
 
-class HomeScreen extends StatelessWidget {
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,6 +48,10 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Navegar para a tela de cadastro de produtos
+                Navigator.push(
+                  context, 
+                  MaterialPageRoute(builder: (context) => TelaCadastroProduto()),
+                );
               },
               child: Text('Cadastrar Produtos'),
             ),
