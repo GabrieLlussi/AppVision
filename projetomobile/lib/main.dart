@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'produtos/produto_page.dart';
+import 'produtos/cadastro_prod.dart';
 import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:firebase_core/firebase_core.dart';
