@@ -17,7 +17,7 @@ class TelaCadastroProdutoState extends State<CadastroProduto> {
   // Função para salvar o produto no Firestore
   Future<void> salvarProduto() async {
     try {
-      await FirebaseFirestore.instance.collection('produtos').add({
+      await FirebaseFirestore.instance.collection('produto').add({
         'nome': nome,
         'preco': double.tryParse(preco) ?? 0.0, // Converte para double
         'peso': double.tryParse(peso) ?? 0.0, // Converte para double
