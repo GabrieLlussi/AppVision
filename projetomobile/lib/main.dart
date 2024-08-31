@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'produtos/produto_page.dart';
 import 'package:projetomobile/carrinho/carrinho_page.dart';
+import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -62,7 +63,7 @@ class HomePage extends StatelessWidget {
               },
               child: Text('Cadastrar Produtos'),
             ),
-            SizedBox(height: 10),
+            SizedBox(height: 25),
             ElevatedButton(
               onPressed: () {
                 // Navegar para a tela de carrinho de compras
@@ -72,6 +73,17 @@ class HomePage extends StatelessWidget {
                 );
               },
               child: Text('Começar a Fazer Compras'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // Navegar para a tela de carrinho de compras
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Carrinho()),
+                );
+              },
+              child: Text('Carrinho'),
             ),
           ],
         ),

@@ -1,18 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-class CarrinhoPage extends StatelessWidget {
+class CarrinhoPage extends StatefulWidget {
+  @override
+  _CarrinhoPageState createState() => _CarrinhoPageState();
+}
+
+  class _CarrinhoPageState extends State<CarrinhoPage> {
   List<Map<String, dynamic>> produtos = [];
 
-    editarProduto(int index) {
-    
+  @override
+  void initState() {
+    super.initState();
+    _fetchProdutos();
   }
-  
-  excluirProduto(int index) {
-    
-  }
-  
-  double calcularTotal() {
-    return produtos.fold(0, (soma, item) => soma + item['preco'] * item['quantidade']);
+
+  void _fetchProdutos() async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Busca os produtos da coleção "produtos" no Firestore
+    QuerySnapshot snapshot = await firestore.collection('produto').get();
+
+    setState(() {
+      // Converte os documentos para Map e adiciona à lista de produtos
+      produtos = snapshot.docs.map((doc) {
+        return {
+          'nome': doc['nome'],
+          'preco': doc['preco'],
+          'peso': doc['peso'],
+          /*'quantidade': doc['quantidade'],*/
+        };
+      }).toList();
+    });
   }
 
   void adicionarProduto() {
@@ -38,23 +57,25 @@ class CarrinhoPage extends StatelessWidget {
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.teal,
-                      child: Text(
+                      /*child: Text(
                         produto['quantidade'].toString(),
                         style: TextStyle(color: Colors.white),
-                      ),
+                      ),*/
                     ),
                     title: Text(produto['nome']),
-                    subtitle: Text('Preço: R\$ ${produto['preco'].toStringAsFixed(2)}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                     Text('Preço: R\$ ${produto['preco'].toStringAsFixed(2)}'),
+                     Text('Peso: ${produto['peso'].toStringAsFixed(2)} g'),
+                      ],
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => editarProduto(index),
-                        ),
-                        IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => excluirProduto(index),
+                          icon: Icon(Icons.add, color: Colors.blue),
+                          onPressed: () => adicionarProduto(),
                         ),
                       ],
                     ),
@@ -68,10 +89,10 @@ class CarrinhoPage extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
+                /*Text(
                   'Total: R\$ ${calcularTotal().toStringAsFixed(2)}',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                ),*/
                 ElevatedButton(
                   onPressed: adicionarProduto,
                   style: ElevatedButton.styleFrom(
