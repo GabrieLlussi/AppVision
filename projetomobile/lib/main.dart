@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'produtos/produto_page.dart';
-import 'package:projetomobile/produtos/tela_edita_produtos.dart';
+import 'package:projetomobile/produtos/tela_lista_produtos.dart'; // Importe a TelaListaProdutos para edição e exclusão de produtos
 import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-// Importe a TelaListaProdutos para edição e exclusão de produtos
-import 'package:projetomobile/produtos/tela_edita_produtos.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -92,7 +90,7 @@ class HomePage extends StatelessWidget {
                 // Navegar para a tela de edição de produtos
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => TelaEditaProdutos()),
+                  MaterialPageRoute(builder: (context) => TelaListaProdutos()),
                 );
               },
               child: Text('Editar Pedido'),  // Botão para editar pedidos
