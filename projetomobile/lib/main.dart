@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
 import 'produtos/produto_page.dart';
+import 'package:projetomobile/carrinho/carrinho_page.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(MyApp());
 }
 
@@ -59,6 +66,10 @@ class HomePage extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 // Navegar para a tela de carrinho de compras
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CarrinhoPage()),
+                );
               },
               child: Text('Começar a Fazer Compras'),
             ),
