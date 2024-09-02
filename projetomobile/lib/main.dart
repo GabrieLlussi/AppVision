@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'produtos/produto_page.dart';
-import 'produtos/cadastro_prod.dart';
+import 'package:projetomobile/produtos/tela_lista_produtos.dart'; // Importe a TelaListaProdutos para edição e exclusão de produtos
 import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -13,8 +13,6 @@ void main() async {
   );
   runApp(MyApp());
 }
-
-
 
 class MyApp extends StatelessWidget {
   @override
@@ -78,13 +76,24 @@ class HomePage extends StatelessWidget {
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                // Navegar para a tela de carrinho de compras
+                // Navegar para a tela do carrinho
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => Carrinho()),
                 );
               },
               child: Text('Carrinho'),
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                // Navegar para a tela de edição de produtos
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => TelaListaProdutos()),
+                );
+              },
+              child: Text('Editar Pedido'),  // Botão para editar pedidos
             ),
           ],
         ),
