@@ -1,8 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
-// ignore: unused_import
-import 'dart:convert';
+//import 'package:path_provider/path_provider.dart';
+//import 'package:firebase_core/firebase_core.dart';
 
 class Carrinho extends StatefulWidget {
   @override
@@ -10,40 +9,46 @@ class Carrinho extends StatefulWidget {
 }
   
   class _CarrinhoState extends State<Carrinho> {
-  List<Map<String, dynamic>> produtos = [];
+  List<Map<String, dynamic>> carrinho = [];
   
   @override
-  void initState() {
-    super.initState();
-    _loadCart(); // Carrega os produtos salvos no carrinho
+    void initState(){
+      super.initState();
+      _fetchCarrinho();
+    }
+  
+  Future<void> _fetchCarrinho() async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      QuerySnapshot snapshot = await firestore.collection('carrinho').get();
+      setState(() {
+        carrinho = snapshot.docs.map((doc) {
+          return {
+            'id': doc.id,
+            'nome' : doc['nome'],
+            'preco' : doc['preco'],
+            'peso' : doc['peso'],
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print("Erro ao buscar carrinho: $e");
+    }
   }
 
-  Future<File> _getFilePath() async {
-    final directory = await getApplicationDocumentsDirectory();
-    return File('${directory.path}/carrinho.txt');
+  Future<void> _removeFromCart(String id) async {
+    try {
+      FirebaseFirestore firebase = FirebaseFirestore.instance;
+      await firebase.collection('carrinho').doc(id).delete();
+      setState(() {
+        carrinho.removeWhere((produto) => produto['id'] == id);
+      });
+    } catch (e) {
+      print("Erro ao remover produto do carrinho: $e");
+    }
   }
 
- Future<void> _loadCart() async {
-  final file = await _getFilePath();
-  if (await file.exists()) {
-    List <String> lines = await file.readAsLines();
-    setState(() {
-     produtos = lines.map((line) {
-          return Map<String, dynamic>.from(json.decode(line));
-      }).toList();
-    });
-  }
- }
-
-
-
-  /*void excluirProduto(int index) {
-    setState(() {
-      produtos.removeAt(index);
-      _saveCart(); // Atualiza o arquivo após excluir
-    });
-  }
-
+/*
   double calcularTotal() {
     return produtos.fold(0, (soma, item) {
       double preco = double.tryParse(item['preco']) ?? 0;
@@ -53,13 +58,7 @@ class Carrinho extends StatefulWidget {
   }
 */
  
-  Future<void> _saveCart() async {
-    final file = await _getFilePath();
-    List<String> lines = produtos.map((produto) {
-      return json.encode(produto);
-    }).toList();
-    await file.writeAsString(lines.join('\n'));
-  }
+  
 
     @override
   Widget build(BuildContext context) {
@@ -72,12 +71,12 @@ class Carrinho extends StatefulWidget {
       body: Column( 
         children: [
           Expanded(
-            child: produtos.isEmpty
+            child: carrinho.isEmpty
               ? Center(child: Text('Carrinho vazio'))
             : ListView.builder(
-              itemCount: produtos.length,
+              itemCount: carrinho.length,
               itemBuilder: (context, index) {
-                final produto = produtos[index];
+                final produto = carrinho[index];
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
@@ -92,8 +91,8 @@ class Carrinho extends StatefulWidget {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Preço: R\$ ${produto['preco'].toStringAsFixed(2)}'),
-                        Text('Peso: ${produto['peso'].toStringAsFixed(2)} g'),
+                        Text('Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}'),
+                        Text('Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g'),
                       ],
                     ),
                     trailing: Row(
@@ -101,7 +100,7 @@ class Carrinho extends StatefulWidget {
                       children: [
                         IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => (index),
+                          onPressed: () => _removeFromCart(produto['id']),
                         ),
                       ],
                     ),

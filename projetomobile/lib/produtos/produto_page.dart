@@ -17,14 +17,14 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
   Future<void> salvarProduto() async {
     try {
       // Convertendo preço e peso para números, se necessário
-      double precoDouble = double.tryParse(preco) ?? 0.0;
-      double pesoDouble = double.tryParse(peso) ?? 0.0;
+      //double precoDouble = double.tryParse(preco) ?? 0.0;
+      //double pesoDouble = double.tryParse(peso) ?? 0.0;
 
       // Salvando no Firestore
       await FirebaseFirestore.instance.collection('produto').add({
         'nome': nome,
-        'preco': precoDouble,
-        'peso': pesoDouble,
+        'preco': preco,
+        'peso': peso,
       });
 
       // Mostra uma mensagem de sucesso

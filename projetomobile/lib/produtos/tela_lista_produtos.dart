@@ -22,7 +22,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
   }
 
   // Função para editar um produto
-  Future<void> editarProduto(String id, String novoNome, double novoPreco, double novoPeso) async {
+  Future<void> editarProduto(String id, String novoNome, String novoPreco, String novoPeso) async {
     try {
       await FirebaseFirestore.instance.collection('produto').doc(id).update({
         'nome': novoNome,
@@ -59,13 +59,13 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
           return ListView(
             children: snapshot.data!.docs.map((doc) {
               String id = doc.id;
-              String nome = doc['nome'];
-              double preco = doc['preco'];
-              double peso = doc['peso'];
+              String nome = doc['nome']; 
+              String preco = doc['preco'].toString();
+              String peso = doc['peso'].toString();
 
               return ListTile(
                 title: Text(nome),
-                subtitle: Text('Preço: \$${preco.toStringAsFixed(2)}, Peso: ${peso.toStringAsFixed(2)} KG'),
+                subtitle: Text('Preço: \$$preco, Peso: $peso g'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -111,9 +111,9 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                 ),
                                 TextButton(
                                   onPressed: () {
-                                    double precoDouble = double.tryParse(novoPreco) ?? 0.0;
-                                    double pesoDouble = double.tryParse(novoPeso) ?? 0.0;
-                                    editarProduto(id, novoNome, precoDouble, pesoDouble);
+                                    //double precoDouble = double.tryParse(novoPreco) ?? 0.0;
+                                    //double pesoDouble = double.tryParse(novoPeso) ?? 0.0;
+                                    editarProduto(id, novoNome, novoPreco, novoPeso);
                                     Navigator.of(context).pop();
                                   },
                                   child: Text('Salvar'),

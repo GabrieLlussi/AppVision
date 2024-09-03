@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart';
+//import 'package:path_provider/path_provider.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
-import 'dart:convert';
+
 
 class CarrinhoPage extends StatefulWidget {
   @override
@@ -12,13 +11,11 @@ class CarrinhoPage extends StatefulWidget {
 
   class _CarrinhoPageState extends State<CarrinhoPage> {
   List<Map<String, dynamic>> produtos = [];
-  List<Map<String, dynamic>> carrinho = [];
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos(); // Busca os produtos do Firestore
-    _loadCart(); //Carrega o carrinho salvo localmente
   }
 
   void _fetchProdutos() async {
@@ -31,6 +28,7 @@ class CarrinhoPage extends StatefulWidget {
       // Converte os documentos para Map e adiciona à lista de produtos
       produtos = snapshot.docs.map((doc) {
         return {
+          'id': doc.id,
           'nome': doc['nome'],
           'preco': doc['preco'],
           'peso': doc['peso'],
@@ -40,41 +38,17 @@ class CarrinhoPage extends StatefulWidget {
     });
   }
 
-  Future<String> _getFilePath() async {
-    final directory = await getApplicationDocumentsDirectory();
-    return '${directory.path}/carrinho.txt';
-  }
+  void __addToCart(Map<String, dynamic> produto) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-  Future<void> _saveCart() async {
-    final filePath = await _getFilePath();
-    final file = File(filePath);
-    String carrinhoJson = json.encode(carrinho);
-    await file.writeAsString(carrinhoJson);
-  }
+    await firestore.collection('carrinho').add(produto);
 
-  Future<void> _loadCart() async {
-    final filePath = await _getFilePath();
-    final file = File(filePath);
-
-    if (await file.exists()) {
-      String carrinhoJson = await file.readAsString();
-      setState(() {
-        carrinho = List<Map<String, dynamic>>.from(json.decode(carrinhoJson));
-      });
-    }
-  }
-
-  void _addToCart(Map<String, dynamic> produto) {
-    setState(() {
-      carrinho.add(produto);
-    });
-    _saveCart();
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${produto['nome']} adicionado ao carrinho')),
+      SnackBar(content: Text('${produto['nome']} adicionado ao carrinho'))
     );
   }
 
-    @override
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -99,8 +73,8 @@ class CarrinhoPage extends StatefulWidget {
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Preço: R\$ ${produto['preco'].toStringAsFixed(2)}'),
-                        Text('Peso: ${produto['peso'].toStringAsFixed(2)} g'),
+                        Text('Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}'),
+                        Text('Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g'),
                       ],
                     ),
                     trailing: Row(
@@ -108,7 +82,7 @@ class CarrinhoPage extends StatefulWidget {
                       children: [
                         IconButton(
                           icon: Icon(Icons.add, color: Colors.blue),
-                          onPressed: () => _addToCart(produto),
+                          onPressed: () => __addToCart(produto),
                         ),
                       ],
                     ),
