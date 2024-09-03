@@ -1,23 +1,65 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+//import 'package:path_provider/path_provider.dart';
+//import 'package:firebase_core/firebase_core.dart';
 
-class Carrinho extends StatelessWidget {
-  List<Map<String, dynamic>> produtos = [];
+class Carrinho extends StatefulWidget {
+  @override
+  _CarrinhoState createState() => _CarrinhoState();
+}
+  
+  class _CarrinhoState extends State<Carrinho> {
+  List<Map<String, dynamic>> carrinho = [];
+  
+  @override
+    void initState(){
+      super.initState();
+      _fetchCarrinho();
+    }
+  
+  Future<void> _fetchCarrinho() async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      QuerySnapshot snapshot = await firestore.collection('carrinho').get();
+      setState(() {
+        carrinho = snapshot.docs.map((doc) {
+          return {
+            'id': doc.id,
+            'nome' : doc['nome'],
+            'preco' : doc['preco'],
+            'peso' : doc['peso'],
+          };
+        }).toList();
+      });
+    } catch (e) {
+      print("Erro ao buscar carrinho: $e");
+    }
+  }
 
-    editarProduto(int index) {
-    
+  Future<void> _removeFromCart(String id) async {
+    try {
+      FirebaseFirestore firebase = FirebaseFirestore.instance;
+      await firebase.collection('carrinho').doc(id).delete();
+      setState(() {
+        carrinho.removeWhere((produto) => produto['id'] == id);
+      });
+    } catch (e) {
+      print("Erro ao remover produto do carrinho: $e");
+    }
   }
-  
-  excluirProduto(int index) {
-    
-  }
-  
+
+/*
   double calcularTotal() {
-    return produtos.fold(0, (soma, item) => soma + item['preco'] * item['quantidade']);
+    return produtos.fold(0, (soma, item) {
+      double preco = double.tryParse(item['preco']) ?? 0;
+      int quantidade = int.tryParse(item['quantidade']) ?? 1;
+      return soma + preco * quantidade;
+    });
   }
+*/
+ 
+  
 
-  void adicionarProduto() {
-    
-  }
     @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,32 +71,36 @@ class Carrinho extends StatelessWidget {
       body: Column( 
         children: [
           Expanded(
-            child: ListView.builder(
-              itemCount: produtos.length,
+            child: carrinho.isEmpty
+              ? Center(child: Text('Carrinho vazio'))
+            : ListView.builder(
+              itemCount: carrinho.length,
               itemBuilder: (context, index) {
-                final produto = produtos[index];
+                final produto = carrinho[index];
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
                     leading: CircleAvatar(
                       backgroundColor: Colors.teal,
-                      child: Text(
+                      /*child: Text(
                         produto['quantidade'].toString(),
                         style: TextStyle(color: Colors.white),
-                      ),
+                      ),*/
                     ),
                     title: Text(produto['nome']),
-                    subtitle: Text('Preço: R\$ ${produto['preco'].toStringAsFixed(2)}'),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}'),
+                        Text('Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g'),
+                      ],
+                    ),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.edit, color: Colors.blue),
-                          onPressed: () => editarProduto(index),
-                        ),
-                        IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => excluirProduto(index),
+                          onPressed: () => _removeFromCart(produto['id']),
                         ),
                       ],
                     ),
@@ -67,23 +113,12 @@ class Carrinho extends StatelessWidget {
             padding: const EdgeInsets.all(15.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
+              /*children: [
                 Text(
                   'Total: R\$ ${calcularTotal().toStringAsFixed(2)}',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                ElevatedButton(
-                  onPressed: adicionarProduto,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                  ),
-                  child: Text(
-                    'Adicionar Item',
-                    style: TextStyle(fontSize: 18, color: Colors.black),
-                  ),
-                ),
-              ],
+              ],*/
             ),
           ),
           Padding(

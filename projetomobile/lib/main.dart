@@ -33,6 +33,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Vision+'),
+        backgroundColor: Colors.teal,
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -41,18 +42,18 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
-              'Bem-vindo ao aplicativo de inclusão social!',
+              'Bem-vindo ao aplicativo Vision+ ',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.teal[700]),
             ),
             SizedBox(height: 20),
             Text(
               'Este aplicativo ajuda pessoas com deficiência visual a realizar compras de forma independente.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18.0),
+              style: TextStyle(fontSize: 18.0, color: Colors.grey[700]),
             ),
             SizedBox(height: 40),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: () {
                 // Navegar para a tela de cadastro de produtos
                 Navigator.push(
@@ -60,10 +61,17 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => TelaCadastroProduto()),
                 );
               },
-              child: Text('Cadastrar Produtos'),
+              icon: Icon(Icons.add_circle_outline),
+              label: Text('Cadastrar Produtos'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal, //Cor do botão
+                foregroundColor: Colors.white, //Cor do texto
+                padding: EdgeInsets.symmetric(vertical: 15.0),
+                textStyle: TextStyle(fontSize: 18.0),
+              ),
             ),
             SizedBox(height: 25),
-            ElevatedButton(
+            ElevatedButton.icon(
               onPressed: () {
                 // Navegar para a tela de carrinho de compras
                 Navigator.push(
@@ -71,10 +79,17 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => CarrinhoPage()),
                 );
               },
-              child: Text('Começar a Fazer Compras'),
+              icon: Icon(Icons.shopping_cart_outlined),
+              label: Text('Começar a fazer compras'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal, //Cor do botão
+                foregroundColor: Colors.white, //Cor do texto
+                padding: EdgeInsets.symmetric(vertical: 15.0),
+                textStyle: TextStyle(fontSize: 18.0),
+              ),
             ),
-            SizedBox(height: 10),
-            ElevatedButton(
+            SizedBox(height: 25),
+            ElevatedButton.icon(
               onPressed: () {
                 // Navegar para a tela do carrinho
                 Navigator.push(
@@ -82,10 +97,17 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => Carrinho()),
                 );
               },
-              child: Text('Carrinho'),
+              icon: Icon(Icons.shopping_basket_outlined),
+              label: Text('Carrinho'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal, // Cor do botão
+                foregroundColor: Colors.white, // Cor do texto
+                padding: EdgeInsets.symmetric(vertical: 15.0),
+                textStyle: TextStyle(fontSize: 18.0),
+              ),
             ),
-            SizedBox(height: 10),
-            ElevatedButton(
+            SizedBox(height: 25),
+            ElevatedButton.icon(
               onPressed: () {
                 // Navegar para a tela de edição de produtos
                 Navigator.push(
@@ -93,7 +115,14 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => TelaListaProdutos()),
                 );
               },
-              child: Text('Editar Pedido'),  // Botão para editar pedidos
+              icon: Icon(Icons.edit_outlined),
+              label: Text('Editar Pedido'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.teal, // Cor do botão
+                foregroundColor: Colors.white, // Cor do texto
+                padding: EdgeInsets.symmetric(vertical: 15.0),
+                textStyle: TextStyle(fontSize: 18.0),
+            ),
             ),
           ],
         ),

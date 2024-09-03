@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:path_provider/path_provider.dart';
+import 'package:projetomobile/carrinho/carrinho.dart';
+
 
 class CarrinhoPage extends StatefulWidget {
   @override
@@ -12,7 +15,7 @@ class CarrinhoPage extends StatefulWidget {
   @override
   void initState() {
     super.initState();
-    _fetchProdutos();
+    _fetchProdutos(); // Busca os produtos do Firestore
   }
 
   void _fetchProdutos() async {
@@ -25,6 +28,7 @@ class CarrinhoPage extends StatefulWidget {
       // Converte os documentos para Map e adiciona à lista de produtos
       produtos = snapshot.docs.map((doc) {
         return {
+          'id': doc.id,
           'nome': doc['nome'],
           'preco': doc['preco'],
           'peso': doc['peso'],
@@ -34,10 +38,17 @@ class CarrinhoPage extends StatefulWidget {
     });
   }
 
-  void adicionarProduto() {
-    
+  void __addToCart(Map<String, dynamic> produto) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    await firestore.collection('carrinho').add(produto);
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${produto['nome']} adicionado ao carrinho'))
+    );
   }
-    @override
+
+ @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -56,18 +67,14 @@ class CarrinhoPage extends StatefulWidget {
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundColor: Colors.teal,
-                      /*child: Text(
-                        produto['quantidade'].toString(),
-                        style: TextStyle(color: Colors.white),
-                      ),*/
+                      backgroundColor: Colors.teal,                   
                     ),
                     title: Text(produto['nome']),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                     Text('Preço: R\$ ${produto['preco'].toStringAsFixed(2)}'),
-                     Text('Peso: ${produto['peso'].toStringAsFixed(2)} g'),
+                        Text('Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}'),
+                        Text('Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g'),
                       ],
                     ),
                     trailing: Row(
@@ -75,7 +82,7 @@ class CarrinhoPage extends StatefulWidget {
                       children: [
                         IconButton(
                           icon: Icon(Icons.add, color: Colors.blue),
-                          onPressed: () => adicionarProduto(),
+                          onPressed: () => __addToCart(produto),
                         ),
                       ],
                     ),
@@ -86,32 +93,14 @@ class CarrinhoPage extends StatefulWidget {
           ),
           Padding(
             padding: const EdgeInsets.all(15.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                /*Text(
-                  'Total: R\$ ${calcularTotal().toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),*/
-                ElevatedButton(
-                  onPressed: adicionarProduto,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
-                    padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-                  ),
-                  child: Text(
-                    'Adicionar Item',
-                    style: TextStyle(fontSize: 18, color: Colors.black),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
             child: ElevatedButton(
               onPressed: () {
                 // Lógica para finalizar a compra
+                // Navegar para a tela de carrinho de compras
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => Carrinho()),
+                );
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 153, 94, 248),
