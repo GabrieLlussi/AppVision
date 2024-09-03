@@ -14,7 +14,7 @@ class Carrinho extends StatefulWidget {
   @override
   void initState() {
     super.initState();
-    _loadCart();
+    _loadCart(); // Carrega os produtos salvos no carrinho
   }
 
   Future<File> _getFilePath() async {
@@ -22,34 +22,28 @@ class Carrinho extends StatefulWidget {
     return File('${directory.path}/carrinho.txt');
   }
 
-  Future<void> _loadCart() async {
-    final file = await _getFilePath();
-    if (await file.exists()) {
-      List<String> lines = await file.readAsLines();
-      setState(() {
-        produtos = lines.map((line) {
-          final Map<String, dynamic> produto = {};
-            line.split(', ').forEach((entry) {
-              final List<String> keyValue = entry.split(': ');
-              if (keyValue.length == 2) {
-                produto[keyValue[0]] = keyValue[1];
-              }
-            });
-          return produto;
-        }).toList();
-         print('Produtos carregados: ${produtos.length}');
-      });
-    }
+ Future<void> _loadCart() async {
+  final file = await _getFilePath();
+  if (await file.exists()) {
+    List <String> lines = await file.readAsLines();
+    setState(() {
+     produtos = lines.map((line) {
+          return Map<String, dynamic>.from(json.decode(line));
+      }).toList();
+    });
   }
+ }
 
-  void excluirProduto(int index) {
+
+
+  /*void excluirProduto(int index) {
     setState(() {
       produtos.removeAt(index);
       _saveCart(); // Atualiza o arquivo após excluir
     });
   }
 
-  /*double calcularTotal() {
+  double calcularTotal() {
     return produtos.fold(0, (soma, item) {
       double preco = double.tryParse(item['preco']) ?? 0;
       int quantidade = int.tryParse(item['quantidade']) ?? 1;
@@ -57,10 +51,13 @@ class Carrinho extends StatefulWidget {
     });
   }
 */
+ 
   Future<void> _saveCart() async {
     final file = await _getFilePath();
-    String produtosJson = produtos.map((produto) => produto.toString()).join('\n');
-    await file.writeAsString(produtosJson);
+    List<String> lines = produtos.map((produto) {
+      return json.encode(produto);
+    }).toList();
+    await file.writeAsString(lines.join('\n'));
   }
 
     @override
@@ -103,7 +100,7 @@ class Carrinho extends StatefulWidget {
                       children: [
                         IconButton(
                           icon: Icon(Icons.delete, color: Colors.red),
-                          onPressed: () => excluirProduto(index),
+                          onPressed: () => (index),
                         ),
                       ],
                     ),
