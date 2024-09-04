@@ -155,6 +155,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                     onPressed: resetFields,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 209, 7, 7),
+                      foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
@@ -172,6 +173,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                           },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 2, 228, 88),
+                      foregroundColor: Colors.white,
                       padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
