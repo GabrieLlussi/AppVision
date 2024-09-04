@@ -52,7 +52,7 @@ class CarrinhoPage extends StatefulWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Carrinho de Compras'),
+        title: Text('Catálogo de produtos'),
         centerTitle: true,
         backgroundColor: Colors.teal,
       ),

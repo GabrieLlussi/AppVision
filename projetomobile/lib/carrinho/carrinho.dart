@@ -48,17 +48,15 @@ class Carrinho extends StatefulWidget {
     }
   }
 
-/*
-  double calcularTotal() {
-    return produtos.fold(0, (soma, item) {
-      double preco = double.tryParse(item['preco']) ?? 0;
-      int quantidade = int.tryParse(item['quantidade']) ?? 1;
-      return soma + preco * quantidade;
-    });
+
+  double _calcularTotal() {
+  double sum = 0.0;
+  for (var produto in carrinho) {
+    double preco = double.parse(produto['preco'].toString());
+    sum += preco;
   }
-*/
- 
-  
+  return sum;
+}
 
     @override
   Widget build(BuildContext context) {
@@ -113,12 +111,12 @@ class Carrinho extends StatefulWidget {
             padding: const EdgeInsets.all(15.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              /*children: [
+              children: [
                 Text(
-                  'Total: R\$ ${calcularTotal().toStringAsFixed(2)}',
+                  'Total: R\$ ${_calcularTotal().toStringAsFixed(2)}',
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-              ],*/
+              ],
             ),
           ),
           Padding(
