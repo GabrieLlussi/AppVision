@@ -44,6 +44,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Lista de Produtos'),
+        backgroundColor: Colors.teal,
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('produto').snapshots(),
@@ -63,72 +64,87 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
               String preco = doc['preco'].toString();
               String peso = doc['peso'].toString();
 
-              return ListTile(
-                title: Text(nome),
-                subtitle: Text('Preço: \$$preco, Peso: $peso g'),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.edit),
-                      onPressed: () {
-                        // Mostrar um diálogo para editar o produto
-                        showDialog(
-                          context: context,
-                          builder: (context) {
-                            String novoNome = nome;
-                            String novoPreco = preco.toString();
-                            String novoPeso = peso.toString();
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 10.0),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 5,
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16.0),
+                  title: Text(
+                    nome,
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18.0,
+                      color: Colors.teal[700],
+                    ),
+                  ),
+                  subtitle: Text(
+                    'Preço: R\$$preco\nPeso: $peso g',
+                    style: TextStyle(color: Colors.grey[700]),
+                  ),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              String novoNome = nome;
+                              String novoPreco = preco.toString();
+                              String novoPeso = peso.toString();
 
-                            return AlertDialog(
-                              title: Text('Editar Produto'),
-                              content: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  TextField(
-                                    decoration: InputDecoration(labelText: 'Nome do Produto'),
-                                    onChanged: (value) => novoNome = value,
-                                    controller: TextEditingController(text: nome),
+                              return AlertDialog(
+                                title: Text('Editar Produto'),
+                                content: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    TextField(
+                                      decoration: InputDecoration(labelText: 'Nome do Produto'),
+                                      onChanged: (value) => novoNome = value,
+                                      controller: TextEditingController(text: nome),
+                                    ),
+                                    TextField(
+                                      decoration: InputDecoration(labelText: 'Preço'),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) => novoPreco = value,
+                                      controller: TextEditingController(text: preco.toString()),
+                                    ),
+                                    TextField(
+                                      decoration: InputDecoration(labelText: 'Peso (KG)'),
+                                      keyboardType: TextInputType.number,
+                                      onChanged: (value) => novoPeso = value,
+                                      controller: TextEditingController(text: peso.toString()),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: Text('Cancelar'),
                                   ),
-                                  TextField(
-                                    decoration: InputDecoration(labelText: 'Preço'),
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (value) => novoPreco = value,
-                                    controller: TextEditingController(text: preco.toString()),
-                                  ),
-                                  TextField(
-                                    decoration: InputDecoration(labelText: 'Peso (KG)'),
-                                    keyboardType: TextInputType.number,
-                                    onChanged: (value) => novoPeso = value,
-                                    controller: TextEditingController(text: peso.toString()),
+                                  TextButton(
+                                    onPressed: () {
+                                      editarProduto(id, novoNome, novoPreco, novoPeso);
+                                      Navigator.of(context).pop();
+                                    },
+                                    child: Text('Salvar'),
                                   ),
                                 ],
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: Text('Cancelar'),
-                                ),
-                                TextButton(
-                                  onPressed: () {
-                                    //double precoDouble = double.tryParse(novoPreco) ?? 0.0;
-                                    //double pesoDouble = double.tryParse(novoPeso) ?? 0.0;
-                                    editarProduto(id, novoNome, novoPreco, novoPeso);
-                                    Navigator.of(context).pop();
-                                  },
-                                  child: Text('Salvar'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      },
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () => excluirProduto(id),
-                    ),
-                  ],
+                              );
+                            },
+                          );
+                        },
+                      ),
+                      IconButton(
+                        icon: Icon(Icons.delete, color: Colors.red),
+                        onPressed: () => excluirProduto(id),
+                      ),
+                    ],
+                  ),
                 ),
               );
             }).toList(),

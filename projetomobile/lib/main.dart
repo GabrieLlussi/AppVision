@@ -48,7 +48,7 @@ class HomePage extends StatelessWidget {
             ),
             SizedBox(height: 20),
             Text(
-              'Este aplicativo ajuda pessoas com deficiência visual a realizar compras de forma independente.',
+              'Este aplicativo ajuda pessoas com baixa visão a realizar compras de forma independente.',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 18.0, color: Colors.grey[700]),
             ),
