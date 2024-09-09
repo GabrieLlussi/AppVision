@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_picker/image_picker.dart';
 
 class TelaCadastroProduto extends StatefulWidget {
   @override
@@ -12,18 +15,60 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
   String nome = '';
   String preco = '';
   String peso = '';
-
+  File ? imgProduto;
   bool isLoading = false;
 
+  //Função para selecionar imagem
+  Future<void> escolherImagem() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        imgProduto = File(pickedFile.path);
+      });
+    }
+  }
+
+  //Função para fazer upload de imagem
+  Future<String?> uploadImagem(File imgProduto) async {
+    try{
+      String nomeArquivo = DateTime.now().millisecondsSinceEpoch.toString();
+      Reference ref = FirebaseStorage.instance.ref().child('Vision').child(nomeArquivo);
+      UploadTask uploadTask = ref.putFile(imgProduto);
+      TaskSnapshot snapshot = await uploadTask.whenComplete(() => null);
+      return await snapshot.ref.getDownloadURL();
+    } catch (e) {
+      print('Erro ao fazer upload da imagem: $e');
+      return null;
+    }
+  }
+
   Future<void> salvarProduto() async {
+    if (imgProduto == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor escolha uma imagem')),
+      );
+      return;
+    }
+
     setState(() {
       isLoading = true;
     });
+
     try {
+      //Faz upload da imagem e obter a URL
+      String? urlImagem =  await uploadImagem(imgProduto!);
+      if (urlImagem == null) {
+        throw 'Erro ao fazer upload da imagem';
+      }
+
+      //Salva o produto no banco
       await FirebaseFirestore.instance.collection('produto').add({
         'nome': nome,
         'preco': preco,
         'peso': peso,
+        'imgProduto':urlImagem,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -34,6 +79,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
         nome = '';
         preco = '';
         peso = '';
+        imgProduto = null;
         isLoading = false;
       });
       formKey.currentState?.reset();
@@ -124,7 +170,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                       SizedBox(height: 15),
                       TextFormField(
                         decoration: InputDecoration(
-                          labelText: 'Peso (KG)',
+                          labelText: 'Peso (g)',
                           labelStyle: TextStyle(color: Colors.teal),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(10.0),
@@ -143,6 +189,14 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                           return null;
                         },
                       ),
+                      SizedBox(height: 15),
+                      ElevatedButton(
+                        onPressed: escolherImagem,
+                        child: Text('Escolher Imagem')
+                        ),
+                        SizedBox(height: 15),
+                        if (imgProduto != null)
+                          Image.file(imgProduto!, height: 150),
                     ],
                   ),
                 ),
