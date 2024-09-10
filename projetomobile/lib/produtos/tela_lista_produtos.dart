@@ -63,6 +63,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
               String nome = doc['nome']; 
               String preco = doc['preco'].toString();
               String peso = doc['peso'].toString();
+              String imgProduto = doc['imgProduto'];
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -72,6 +73,15 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                 elevation: 5,
                 child: ListTile(
                   contentPadding: EdgeInsets.all(16.0),
+                  //Exibe a imagem do produto
+                  leading: imgProduto.isNotEmpty
+                    ? Image.network(
+                      imgProduto,
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    )
+                    : Icon(Icons.image, size: 50, color: Colors.grey),
                   title: Text(
                     nome,
                     style: TextStyle(

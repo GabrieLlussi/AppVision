@@ -32,7 +32,7 @@ class CarrinhoPage extends StatefulWidget {
           'nome': doc['nome'],
           'preco': doc['preco'],
           'peso': doc['peso'],
-          /*'quantidade': doc['quantidade'],*/
+          'imgProduto' : doc['imgProduto'],
         };
       }).toList();
     });
@@ -66,9 +66,14 @@ class CarrinhoPage extends StatefulWidget {
                 return Card(
                   margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: Colors.teal,                   
-                    ),
+                    leading: produto['imgProduto'] != null && produto['imgProduto'].isNotEmpty
+                    ? Image.network(
+                      produto['imgProduto'],
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                    )
+                    : Icon(Icons.image, size: 50, color: Colors.grey),
                     title: Text(produto['nome']),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
