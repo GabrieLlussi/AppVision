@@ -15,6 +15,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
   String nome = '';
   String preco = '';
   String peso = '';
+  String descricao = '';
   File ? imgProduto;
   bool isLoading = false;
 
@@ -68,6 +69,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
         'nome': nome,
         'preco': preco,
         'peso': peso,
+        'descricao' : descricao,
         'imgProduto':urlImagem,
       });
 
@@ -79,6 +81,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
         nome = '';
         preco = '';
         peso = '';
+        descricao = '';
         imgProduto = null;
         isLoading = false;
       });
@@ -98,6 +101,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
       nome = '';
       preco = '';
       peso = '';
+      descricao = '';
     });
     formKey.currentState?.reset();
   }
@@ -185,6 +189,28 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor, insira o peso do produto';
+                          }
+                          return null;
+                        },
+                      ),
+                      SizedBox(height: 15),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: 'Descrição',
+                          labelStyle: TextStyle(color: Colors.teal),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                          ),
+                        ),
+                        keyboardType: TextInputType.number,
+                        onChanged: (value) {
+                          setState(() {
+                            descricao = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Por favor, insira a descrição do produto';
                           }
                           return null;
                         },

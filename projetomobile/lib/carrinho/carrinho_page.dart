@@ -86,11 +86,16 @@ class CarrinhoPage extends StatefulWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
+                          icon: Icon(Icons.shopping_cart, color: Colors.blue),
+                          onPressed: () => __addToCart(produto),
+                        ),
+                        IconButton(
                           icon: Icon(Icons.add, color: Colors.blue),
                           onPressed: () => __addToCart(produto),
                         ),
                       ],
                     ),
+                    
                   ),
                 );
               },
