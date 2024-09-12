@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 //import 'package:path_provider/path_provider.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
+import 'package:projetomobile/carrinho/tela_detalhes.dart';
 
 
 class CarrinhoPage extends StatefulWidget {
@@ -32,6 +33,7 @@ class CarrinhoPage extends StatefulWidget {
           'nome': doc['nome'],
           'preco': doc['preco'],
           'peso': doc['peso'],
+          'descricao': doc['descricao'],
           'imgProduto' : doc['imgProduto'],
         };
       }).toList();
@@ -80,6 +82,7 @@ class CarrinhoPage extends StatefulWidget {
                       children: [
                         Text('Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}'),
                         Text('Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g'),
+                        //Text('${(produto['descricao'])}'),
                       ],
                     ),
                     trailing: Row(
@@ -91,7 +94,12 @@ class CarrinhoPage extends StatefulWidget {
                         ),
                         IconButton(
                           icon: Icon(Icons.add, color: Colors.blue),
-                          onPressed: () => __addToCart(produto),
+                          onPressed: () {
+                            Navigator.push(
+                            context,
+                            MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
+                          );
+                          },
                         ),
                       ],
                     ),
