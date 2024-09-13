@@ -42,9 +42,9 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
-              'Bem-vindo ao aplicativo Vision+ ',
+              'Vision+ ',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 30.0, fontWeight: FontWeight.bold, color: Colors.teal[700]),
+              style: TextStyle(fontSize: 70.0, fontWeight: FontWeight.bold, color: Colors.teal[700]),
             ),
             SizedBox(height: 20),
             Text(
