@@ -30,9 +30,15 @@ class MyApp extends StatelessWidget {
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Obter o tamanho preferido da fonte do usuário
+    double preferredFontSize = MediaQuery.of(context).textScaleFactor;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Vision+'),
+        title: Text(
+          'Vision+',
+          style: TextStyle(fontSize: 24.0 * preferredFontSize),
+        ),
         backgroundColor: Colors.teal,
       ),
       body: Padding(
@@ -42,32 +48,42 @@ class HomePage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
             Text(
-              'Vision+ ',
+              'Vision+',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 70.0, fontWeight: FontWeight.bold, color: Colors.teal[700]),
+              style: TextStyle(
+                fontSize: 70.0 * preferredFontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.teal[800], // Maior contraste
+              ),
             ),
             SizedBox(height: 20),
             Text(
               'Este aplicativo ajuda pessoas com baixa visão a realizar compras de forma independente.',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 18.0, color: Colors.grey[700]),
+              style: TextStyle(
+                fontSize: 22.0 * preferredFontSize, // Aumentar o tamanho da fonte
+                color: Colors.black87, // Maior contraste
+              ),
             ),
             SizedBox(height: 40),
             ElevatedButton.icon(
               onPressed: () {
+                // Fornecer feedback auditivo
                 // Navegar para a tela de cadastro de produtos
                 Navigator.push(
                   context, 
                   MaterialPageRoute(builder: (context) => TelaCadastroProduto()),
                 );
               },
-              icon: Icon(Icons.add_circle_outline),
-              label: Text('Cadastrar Produtos'),
+              icon: Icon(Icons.add_circle_outline, size: 30 * preferredFontSize), // Ícones maiores
+              label: Text(
+                'Cadastrar Produtos',
+                style: TextStyle(fontSize: 22.0 * preferredFontSize), // Aumentar o tamanho do texto
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, //Cor do botão
-                foregroundColor: Colors.white, //Cor do texto
-                padding: EdgeInsets.symmetric(vertical: 15.0),
-                textStyle: TextStyle(fontSize: 18.0),
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 20.0), // Mais espaço para toque
               ),
             ),
             SizedBox(height: 25),
@@ -79,13 +95,15 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => CarrinhoPage()),
                 );
               },
-              icon: Icon(Icons.shopping_cart_outlined),
-              label: Text('Começar a fazer compras'),
+              icon: Icon(Icons.shopping_cart_outlined, size: 30 * preferredFontSize),
+              label: Text(
+                'Começar a fazer compras',
+                style: TextStyle(fontSize: 22.0 * preferredFontSize),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, //Cor do botão
-                foregroundColor: Colors.white, //Cor do texto
-                padding: EdgeInsets.symmetric(vertical: 15.0),
-                textStyle: TextStyle(fontSize: 18.0),
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 20.0),
               ),
             ),
             SizedBox(height: 25),
@@ -97,13 +115,15 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => Carrinho()),
                 );
               },
-              icon: Icon(Icons.shopping_basket_outlined),
-              label: Text('Carrinho'),
+              icon: Icon(Icons.shopping_basket_outlined, size: 30 * preferredFontSize),
+              label: Text(
+                'Carrinho',
+                style: TextStyle(fontSize: 22.0 * preferredFontSize),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, // Cor do botão
-                foregroundColor: Colors.white, // Cor do texto
-                padding: EdgeInsets.symmetric(vertical: 15.0),
-                textStyle: TextStyle(fontSize: 18.0),
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 20.0),
               ),
             ),
             SizedBox(height: 25),
@@ -115,14 +135,16 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => TelaListaProdutos()),
                 );
               },
-              icon: Icon(Icons.edit_outlined),
-              label: Text('Editar Pedido'),
+              icon: Icon(Icons.edit_outlined, size: 30 * preferredFontSize),
+              label: Text(
+                'Editar Pedido',
+                style: TextStyle(fontSize: 22.0 * preferredFontSize),
+              ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal, // Cor do botão
-                foregroundColor: Colors.white, // Cor do texto
-                padding: EdgeInsets.symmetric(vertical: 15.0),
-                textStyle: TextStyle(fontSize: 18.0),
-            ),
+                backgroundColor: Colors.teal,
+                foregroundColor: Colors.white,
+                padding: EdgeInsets.symmetric(vertical: 20.0),
+              ),
             ),
           ],
         ),
