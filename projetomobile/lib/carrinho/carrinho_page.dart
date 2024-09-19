@@ -56,7 +56,7 @@ class CarrinhoPage extends StatefulWidget {
       appBar: AppBar(
         title: Text('Catálogo de produtos'),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 40, 106, 248),
+        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
       body: Column( 
         children: [
@@ -121,7 +121,7 @@ class CarrinhoPage extends StatefulWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 153, 94, 248),
+                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
                 padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               ),
               child: Text(

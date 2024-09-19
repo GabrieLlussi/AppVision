@@ -28,7 +28,7 @@ class TelaDetalhes extends StatelessWidget {
         produto['nome'],
         style: TextStyle(fontSize: 24.0 * preferredFontSize),
       ),
-      backgroundColor: Colors.teal,
+      backgroundColor: const Color.fromARGB(255, 55, 117, 199),
     ),
     body: Padding(
       padding: const EdgeInsets.all(16.0),

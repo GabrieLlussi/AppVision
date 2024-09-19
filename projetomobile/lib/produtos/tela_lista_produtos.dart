@@ -96,7 +96,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Lista de Produtos'),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('produto').snapshots(),

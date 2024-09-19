@@ -39,7 +39,7 @@ class HomePage extends StatelessWidget {
           'Vision+',
           style: TextStyle(fontSize: 24.0 * preferredFontSize),
         ),
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -53,7 +53,7 @@ class HomePage extends StatelessWidget {
               style: TextStyle(
                 fontSize: 70.0 * preferredFontSize,
                 fontWeight: FontWeight.bold,
-                color: Colors.teal[800], // Maior contraste
+                color: const Color.fromARGB(255, 55, 117, 199), // Maior contraste
               ),
             ),
             SizedBox(height: 20),
@@ -81,7 +81,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 22.0 * preferredFontSize), // Aumentar o tamanho do texto
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 20.0), // Mais espaço para toque
               ),
@@ -101,7 +101,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 22.0 * preferredFontSize),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 20.0),
               ),
@@ -121,7 +121,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 22.0 * preferredFontSize),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 20.0),
               ),
@@ -141,7 +141,7 @@ class HomePage extends StatelessWidget {
                 style: TextStyle(fontSize: 22.0 * preferredFontSize),
               ),
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.teal,
+                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
                 foregroundColor: Colors.white,
                 padding: EdgeInsets.symmetric(vertical: 20.0),
               ),
