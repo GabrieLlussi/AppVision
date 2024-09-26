@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 
@@ -17,6 +18,13 @@ class TelaDetalhes extends StatelessWidget {
     );
   }
 
+    final FlutterTts _flutterTts = FlutterTts();
+
+    Future<void> _falarDescricao(String texto) async {
+    await _flutterTts.speak(texto);
+  }
+  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -31,7 +39,18 @@ class TelaDetalhes extends StatelessWidget {
             Text('Nome: ${produto['nome']}', style: TextStyle(fontSize: 20)),
             Text('Preço: R\$${produto['preco']}', style: TextStyle(fontSize: 18)),
             Text('Peso: ${produto['peso']}g', style: TextStyle(fontSize: 18)),
-            Text('Descrição: ${produto['descricao']}', style: TextStyle(fontSize: 18)),
+            //Text('Descrição: ${produto['descricao']}', style: TextStyle(fontSize: 18)),
+            GestureDetector(
+              onTap: () => _falarDescricao(produto['descricao'] ?? 'Descrição não disponível'),
+                child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black54, width: 2.0),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Text('${produto['descricao']}', style: TextStyle(fontSize: 18)),
+                ),
+            ),
             SizedBox(height: 20,),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -41,7 +60,7 @@ class TelaDetalhes extends StatelessWidget {
                  onPressed: () => _addToCart(context, produto),
                  ),
                  IconButton(
-                  icon: Icon(Icons.shopping_cart, color: Colors.blue),
+                  icon: Icon(Icons.shopping_cart, color: Colors.red),
                   onPressed: () {
                     Navigator.push(
                       context,

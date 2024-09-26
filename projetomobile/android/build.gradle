@@ -1,3 +1,20 @@
+// Adicionando a configuração do buildscript para o Kotlin
+buildscript {
+    ext.kotlin_version = '1.9.0' // Defina a versão do Kotlin aqui
+    repositories {
+        google() // Repositório do Google
+        mavenCentral() // Repositório do Maven
+    }
+    dependencies {
+        // Plugin do Gradle para Kotlin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // Plugin do Gradle para Android
+        classpath 'com.android.tools.build:gradle:8.1.0' // Atualize conforme necessário
+    }
+}
+
+// Outras configurações do projeto, que você já tem
 allprojects {
     repositories {
         google()
