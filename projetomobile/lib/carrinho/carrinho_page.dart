@@ -56,7 +56,7 @@ class CarrinhoPage extends StatefulWidget {
       appBar: AppBar(
         title: Text('Catálogo de produtos'),
         centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
       body: Column( 
         children: [
@@ -89,11 +89,11 @@ class CarrinhoPage extends StatefulWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.shopping_cart, color: Colors.blue),
+                          icon: Icon(Icons.add_shopping_cart_outlined, color: Colors.blue),
                           onPressed: () => __addToCart(produto),
                         ),
                         IconButton(
-                          icon: Icon(Icons.add, color: Colors.blue),
+                          icon: Icon(Icons.info, color: Colors.blue),
                           onPressed: () {
                             Navigator.push(
                             context,
@@ -121,7 +121,7 @@ class CarrinhoPage extends StatefulWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 153, 94, 248),
+                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
                 padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               ),
               child: Text(

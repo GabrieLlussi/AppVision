@@ -108,174 +108,185 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Cadastro de Produto'),
-        backgroundColor: Colors.teal,
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Card(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Nome do Produto',
-                          labelStyle: TextStyle(color: Colors.teal),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Cadastro de Produto'),
+      backgroundColor: const Color.fromARGB(255, 55, 117, 199),
+    ),
+    body: SingleChildScrollView(
+      padding: const EdgeInsets.all(16.0),
+      child: Form(
+        key: formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Adicionar o texto de instrução
+            Text(
+              'Preencha as informações do produto:',
+              style: TextStyle(
+                fontSize: 20.0, // Tamanho da fonte
+                fontWeight: FontWeight.bold, // Negrito
+                color: const Color.fromARGB(255, 0, 0, 0), // Cor do texto
+              ),
+            ),
+            SizedBox(height: 15), // Espaço entre o texto e o formulário
+            // Card para os campos do formulário
+            Card(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              elevation: 5,
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  children: [
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Nome do Produto',
+                        labelStyle: TextStyle(color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        onChanged: (value) {
-                          setState(() {
-                            nome = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, insira o nome de um produto';
-                          }
-                          return null;
-                        },
                       ),
-                      SizedBox(height: 15),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Preço',
-                          labelStyle: TextStyle(color: Colors.teal),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
+                      onChanged: (value) {
+                        setState(() {
+                          nome = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira o nome de um produto';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Preço',
+                        labelStyle: TextStyle(color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          setState(() {
-                            preco = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, insira o preço do produto';
-                          }
-                          return null;
-                        },
                       ),
-                      SizedBox(height: 15),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Peso (g)',
-                          labelStyle: TextStyle(color: Colors.teal),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        setState(() {
+                          preco = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira o preço do produto';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Peso (g)',
+                        labelStyle: TextStyle(color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          setState(() {
-                            peso = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, insira o peso do produto';
-                          }
-                          return null;
-                        },
                       ),
-                      SizedBox(height: 15),
-                      TextFormField(
-                        decoration: InputDecoration(
-                          labelText: 'Descrição',
-                          labelStyle: TextStyle(color: Colors.teal),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        setState(() {
+                          peso = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira o peso do produto';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    TextFormField(
+                      decoration: InputDecoration(
+                        labelText: 'Descrição',
+                        labelStyle: TextStyle(color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0),
                         ),
-                        keyboardType: TextInputType.number,
-                        onChanged: (value) {
-                          setState(() {
-                            descricao = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor, insira a descrição do produto';
-                          }
-                          return null;
-                        },
                       ),
-                      SizedBox(height: 15),
-                      ElevatedButton(
-                        onPressed: escolherImagem,
-                        child: Text('Escolher Imagem')
-                        ),
-                        SizedBox(height: 15),
-                        if (imgProduto != null)
-                          Image.file(imgProduto!, height: 150),
-                    ],
-                  ),
+                      onChanged: (value) {
+                        setState(() {
+                          descricao = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Por favor, insira a descrição do produto';
+                        }
+                        return null;
+                      },
+                    ),
+                    SizedBox(height: 15),
+                    ElevatedButton(
+                      onPressed: escolherImagem,
+                      child: Text('Escolher Imagem'),
+                    ),
+                    SizedBox(height: 15),
+                    if (imgProduto != null)
+                      Image.file(imgProduto!, height: 150),
+                  ],
                 ),
               ),
-              SizedBox(height: 20),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: resetFields,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 209, 7, 7),
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+            ),
+            SizedBox(height: 20),
+            // Botões de cancelar e salvar
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                ElevatedButton(
+                  onPressed: resetFields,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 209, 7, 7),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: Text('Cancelar'),
                   ),
-                  ElevatedButton(
-                    onPressed: isLoading
-                        ? null
-                        : () {
-                            if (formKey.currentState!.validate()) {
-                              salvarProduto();
-                            }
-                          },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 2, 228, 88),
-                      foregroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                  child: Text('Cancelar'),
+                ),
+                ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () {
+                          if (formKey.currentState!.validate()) {
+                            salvarProduto();
+                          }
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color.fromARGB(255, 36, 102, 41),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    child: isLoading
-                        ? SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                        : Text('Salvar'),
                   ),
-                ],
-              ),
-            ],
-          ),
+                  child: isLoading
+                      ? SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : Text('Salvar'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }

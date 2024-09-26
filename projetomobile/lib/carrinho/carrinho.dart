@@ -65,7 +65,7 @@ class Carrinho extends StatefulWidget {
       appBar: AppBar(
         title: Text('Carrinho de Compras'),
         centerTitle: true,
-        backgroundColor: Colors.teal,
+        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
       body: Column( 
         children: [
@@ -129,12 +129,14 @@ class Carrinho extends StatefulWidget {
                 // Lógica para finalizar a compra
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 153, 94, 248),
+                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
                 padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               ),
               child: Text(
                 'Finalizar Compra',
-                style: TextStyle(fontSize: 22, color: Colors.black),
+                style: TextStyle(fontSize: 22, color: Colors.black,
+                fontWeight: FontWeight.bold,
+                ),
               ),
             ),
           ),
