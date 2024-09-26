@@ -24,47 +24,11 @@ class TelaDetalhes extends StatelessWidget {
     await _flutterTts.speak(texto);
   }
   
-
-  @override
+@override
   Widget build(BuildContext context) {
-<<<<<<< HEAD
-    return Scaffold(
-      appBar: AppBar(title: Text(produto['nome'])),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Image.network(produto['imgProduto']),
-            SizedBox(height: 10),
-            Text('Nome: ${produto['nome']}', style: TextStyle(fontSize: 20)),
-            Text('Preço: R\$${produto['preco']}', style: TextStyle(fontSize: 18)),
-            Text('Peso: ${produto['peso']}g', style: TextStyle(fontSize: 18)),
-            //Text('Descrição: ${produto['descricao']}', style: TextStyle(fontSize: 18)),
-            GestureDetector(
-              onTap: () => _falarDescricao(produto['descricao'] ?? 'Descrição não disponível'),
-                child: Container(
-                  padding: EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black54, width: 2.0),
-                    borderRadius: BorderRadius.circular(8.0),
-                  ),
-                  child: Text('${produto['descricao']}', style: TextStyle(fontSize: 18)),
-                ),
-            ),
-            SizedBox(height: 20,),
-            Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton( 
-                 icon: Icon(Icons.add, color: Colors.blue),
-                 onPressed: () => _addToCart(context, produto),
-                 ),
-                 IconButton(
-                  icon: Icon(Icons.shopping_cart, color: Colors.red),
-
   // Obter o tamanho preferido da fonte do usuário
   double preferredFontSize = MediaQuery.of(context).textScaleFactor;
+
 
   return Scaffold(
     appBar: AppBar(
@@ -117,14 +81,23 @@ class TelaDetalhes extends StatelessWidget {
             ),
           ),
           SizedBox(height: 10),
-          Text(
-            'Descrição: ${produto['descricao']}',
-            style: TextStyle(
+          
+          GestureDetector(
+              onTap: () => _falarDescricao(produto['descricao'] ?? 'Descrição não disponível'),
+                child: Container(
+                  padding: EdgeInsets.all(8.0),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black54, width: 2.0),
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: Text('${produto['descricao']}',
+                  style: TextStyle(
               fontSize: 22 * preferredFontSize,
               color: Colors.black87,
+                ),
+              ),
             ),
           ),
-          SizedBox(height: 30),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -147,7 +120,7 @@ class TelaDetalhes extends StatelessWidget {
                     style: TextStyle(fontSize: 22.0 * preferredFontSize),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.lime,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
                   ),
@@ -157,7 +130,6 @@ class TelaDetalhes extends StatelessWidget {
               Semantics(
                 label: 'Ir para o carrinho de compras',
                 child: ElevatedButton.icon(
->>>>>>> d207ef1ece0231566c9e40e50446d7cc31b18567
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -170,7 +142,7 @@ class TelaDetalhes extends StatelessWidget {
                     style: TextStyle(fontSize: 22.0 * preferredFontSize),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.teal,
+                    backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                     padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
                   ),
@@ -184,3 +156,5 @@ class TelaDetalhes extends StatelessWidget {
   );
 }
 }
+
+
