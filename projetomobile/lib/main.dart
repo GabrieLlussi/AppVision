@@ -3,6 +3,7 @@ import 'produtos/produto_page.dart';
 import 'package:projetomobile/produtos/tela_lista_produtos.dart'; // Importe a TelaListaProdutos para edição e exclusão de produtos
 import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
+import 'package:projetomobile/mercado/cadastroMercado.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -66,6 +67,18 @@ class HomePage extends StatelessWidget {
                 color: Colors.blue,
               ),
             ),
+            
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Produtos',
+                style: TextStyle(
+                  color: Colors.blue, // Cor pétala (pode substituir por outra cor)
+                  fontSize: 20.0, // Tamanho da fonte
+                  fontWeight: FontWeight.bold, // Deixar o texto em negrito
+                ),
+              ),
+            ),
             ListTile(
               leading: Icon(Icons.add_circle_outline),
               title: Text('Cadastrar produtos'),
@@ -87,6 +100,39 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(builder: (context) => TelaListaProdutos()),
                 ); // Fechar o drawer
               },
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Supermercados',
+                style: TextStyle(
+                  color: Colors.blue, // Cor pétala (pode substituir por outra cor)
+                  fontSize: 20.0, // Tamanho da fonte
+                  fontWeight: FontWeight.bold, // Deixar o texto em negrito
+                ),
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.add_circle_outline),
+              title: Text('Cadastrar estabelecimentos'),
+              onTap: () {
+                // Ação do botão Home
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => CadastroMercado()),
+                ); // Fechar o drawer
+              },
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Informações',
+                style: TextStyle(
+                  color: Colors.blue, // Cor pétala (pode substituir por outra cor)
+                  fontSize: 20.0, // Tamanho da fonte
+                  fontWeight: FontWeight.bold, // Deixar o texto em negrito
+                ),
+              ),
             ),
             ListTile(
               leading: Icon(Icons.gps_fixed),
