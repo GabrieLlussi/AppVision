@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/material.dart'; 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapScreen extends StatefulWidget {
@@ -29,27 +29,39 @@ class _MapScreenState extends State<MapScreen> {
       appBar: AppBar(
         title: Text('Selecionar Local'),
       ),
-      body: GoogleMap(
-        onMapCreated: _onMapCreated,
-        initialCameraPosition: CameraPosition(
-          target: LatLng(-15.7942, -47.8822), // Posição inicial no mapa
-          zoom: 10,
-        ),
-        onTap: _onTap,
-        markers: selectedLocation != null
-            ? {
-                Marker(
-                  markerId: MarkerId('selected-location'),
-                  position: selectedLocation!,
-                )
-              }
-            : {},
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pop(context, selectedLocation); // Retorna as coordenadas para a tela anterior
-        },
-        child: Icon(Icons.check),
+      body: Stack(
+        children: [
+          // Mapa ocupa todo o espaço
+          GoogleMap(
+            onMapCreated: _onMapCreated,
+            initialCameraPosition: CameraPosition(
+              target: LatLng(-15.7942, -47.8822), // Posição inicial no mapa
+              zoom: 10,
+            ),
+            onTap: _onTap,
+            markers: selectedLocation != null
+                ? {
+                    Marker(
+                      markerId: MarkerId('selected-location'),
+                      position: selectedLocation!,
+                    )
+                  }
+                : {},
+          ),
+          // Botão centralizado
+          Align(
+            alignment: Alignment.bottomCenter, // Centralizado na parte inferior
+            child: Padding(
+              padding: const EdgeInsets.only(bottom: 20.0), // Ajuste o padding se quiser elevar o botão
+              child: FloatingActionButton(
+                onPressed: () {
+                  Navigator.pop(context, selectedLocation); // Retorna as coordenadas para a tela anterior
+                },
+                child: Icon(Icons.check),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

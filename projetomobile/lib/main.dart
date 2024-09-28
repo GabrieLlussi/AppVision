@@ -1,7 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'produtos/produto_page.dart';
 import 'package:projetomobile/produtos/tela_lista_produtos.dart'; // Importe a TelaListaProdutos para edição e exclusão de produtos
-import 'package:projetomobile/carrinho/carrinho_page.dart';
+//import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'package:projetomobile/mercado/cadastro_mercado.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -145,53 +147,76 @@ class HomePage extends StatelessWidget {
         ),
       ),
 
+      //Tela inicial
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            Text(
-              'Vision+',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 70.0 * preferredFontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color.fromARGB(255, 55, 117, 199), // Maior contraste
-              ),
-            ),
-            SizedBox(height: 20),
-            Text(
-              'Este aplicativo ajuda pessoas com baixa visão a realizar compras de forma independente.',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 22.0 * preferredFontSize, // Aumentar o tamanho da fonte
-                color: Colors.black87, // Maior contraste
-              ),
-            ),
-            SizedBox(height: 25),
-            ElevatedButton.icon(
-              onPressed: () {
-                // Navegar para a tela de carrinho de compras
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => CarrinhoPage()),
+        child: FutureBuilder<QuerySnapshot>(
+          future: FirebaseFirestore.instance.collection('mercado').get(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            }
+
+            if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+              return Center(child: Text('Nenhum estabelecimento disponível.'));
+            }
+
+            var mercados = snapshot.data!.docs;
+
+            return GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, //Num de colunas
+                mainAxisSpacing: 10.0,
+                crossAxisSpacing: 10.0,
+                childAspectRatio: 0.75, //Proporção ajustada para mostrar imagens
+                ),
+                itemCount: mercados.length,
+                itemBuilder: (context, index) {
+                  var mercado = mercados[index];
+                  var imageUrl = mercado['imgMercado']; 
+                  var nome = mercado['nome'];
+
+                  return GestureDetector(
+                    onTap: () {
+                      //Navegar para o catálogo de produtos correspondente
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CarrinhoPage(),
+                          )
+                      );
+                    },
+                  child: Card(
+                    elevation: 5,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: Image.network(
+                            imageUrl,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Text(
+                            nome,
+                            style: TextStyle(
+                              fontSize: 16.0 * preferredFontSize,
+                              fontWeight: FontWeight.bold,
+                              color: const Color.fromARGB(255, 1, 4, 9),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
-              icon: Icon(Icons.shopping_cart_outlined, size: 30 * preferredFontSize),
-              label: Text(
-                'Começar a fazer compras',
-                style: TextStyle(fontSize: 22.0 * preferredFontSize),
-              ),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
-                foregroundColor: Colors.white,
-                padding: EdgeInsets.symmetric(vertical: 20.0),
-              ),
-            ),
-          ],
-        ),
-      ),
+            );
+          }
+        )
+      )
     );
   }
 }
