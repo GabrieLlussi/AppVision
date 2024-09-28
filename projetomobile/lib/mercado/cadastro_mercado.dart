@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:projetomobile/gps/map_screen.dart';
 
 class CadastroMercado extends StatefulWidget {
   @override
@@ -15,6 +16,8 @@ class CadastroMercadoState extends State<CadastroMercado> {
   String nome = '';
   File ? imgMercado;
   bool isLoading = false;
+  double? latitude;
+  double? longitude;
 
   //Função para selecionar imagem
   Future<void> escolherImagem() async {
@@ -42,10 +45,17 @@ class CadastroMercadoState extends State<CadastroMercado> {
     }
   }
 
-  Future<void> salvarProduto() async {
+  Future<void> salvarMercado() async {
     if (imgMercado == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Por favor escolha uma imagem')),
+      );
+      return;
+    }
+
+    if (latitude == null || longitude == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Por favor, selecione um local no mapa')),
       );
       return;
     }
@@ -61,19 +71,23 @@ class CadastroMercadoState extends State<CadastroMercado> {
         throw 'Erro ao fazer upload da imagem';
       }
 
-      //Salva o produto no banco
-      await FirebaseFirestore.instance.collection('produto').add({
+      //Salva o estabelecimento no banco
+      await FirebaseFirestore.instance.collection('mercado').add({
         'nome': nome,
-        'imgProduto':urlImagem,
+        'imgMercado':urlImagem,
+        'latitude': latitude,
+        'longitude': longitude,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Produto salvo com sucesso!')),
+        SnackBar(content: Text('Estabelecimento salvo com sucesso!')),
       );
 
       setState(() {
         nome = '';
         imgMercado = null;
+        latitude = null;
+        longitude =  null;
         isLoading = false;
       });
       formKey.currentState?.reset();
@@ -82,7 +96,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
         isLoading = false;
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao salvar o produto: $e')),
+        SnackBar(content: Text('Erro ao salvar o estabelecimento: $e')),
       );
     }
   }
@@ -90,9 +104,28 @@ class CadastroMercadoState extends State<CadastroMercado> {
   void resetFields() {
     setState(() {
       nome = '';
+      latitude = null;
+      longitude = null;
     });
     formKey.currentState?.reset();
   }
+
+  void _acessoMaps() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => MapScreen()),
+    );
+
+    if (result != null){
+      setState(() {
+        latitude = result.latitude;
+        longitude = result.longitude;
+      });
+    }
+  }
+
+  
+
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +176,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
                       },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Por favor, insira o nome de um produto';
+                          return 'Por favor, insira o nome do estabelecimento';
                         }
                         return null;
                       },
@@ -156,6 +189,13 @@ class CadastroMercadoState extends State<CadastroMercado> {
                     SizedBox(height: 15),
                     if (imgMercado != null)
                       Image.file(imgMercado!, height: 150),
+                    SizedBox(height: 15),
+                    ElevatedButton(
+                      onPressed: _acessoMaps, 
+                      child: Text('Selecionar o local no mapa'),
+                      ),
+                      if(latitude != null && longitude !=null)
+                        Text('Local selecionado: Lat: $latitude, Lon: $longitude'),
                   ],
                 ),
               ),
@@ -182,7 +222,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
                       ? null
                       : () {
                           if (formKey.currentState!.validate()) {
-                            salvarProduto();
+                            salvarMercado();
                           }
                         },
                   style: ElevatedButton.styleFrom(

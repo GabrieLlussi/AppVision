@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'produtos/produto_page.dart';
 import 'package:projetomobile/produtos/tela_lista_produtos.dart'; // Importe a TelaListaProdutos para edição e exclusão de produtos
 import 'package:projetomobile/carrinho/carrinho_page.dart';
-import 'package:projetomobile/carrinho/carrinho.dart';
-import 'package:projetomobile/mercado/cadastroMercado.dart';
+import 'package:projetomobile/mercado/cadastro_mercado.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
