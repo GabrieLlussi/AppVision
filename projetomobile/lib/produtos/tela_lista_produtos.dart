@@ -128,8 +128,10 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
               String peso = doc['peso'].toString();
               String descricao = doc['descricao'];
               String imgProduto = doc['imgProduto'];
-              String? codigoBarras = doc['codigoBarras'];
-
+              
+              final data = doc.data() as Map<String, dynamic>?; // Fazendo o cast para Map
+             String? codigoBarras = data != null && data.containsKey('codigoBarras') ? data['codigoBarras'] : null;
+             
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 10.0),
                 shape: RoundedRectangleBorder(
