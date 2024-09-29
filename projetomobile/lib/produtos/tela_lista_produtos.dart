@@ -1,10 +1,9 @@
-import 'package:firebase_storage/firebase_storage.dart';
-//import 'package:flutter/foundation.dart';
+import 'package:firebase_storage/firebase_storage.dart'; 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
-
 import 'package:image_picker/image_picker.dart';
+import 'package:barcode_scan2/barcode_scan2.dart'; // Adicionado para leitura de código de barras
 
 class TelaListaProdutos extends StatefulWidget {
   @override
@@ -13,27 +12,27 @@ class TelaListaProdutos extends StatefulWidget {
 
 class _TelaListaProdutosState extends State<TelaListaProdutos> {
   File? _novaImagem;
+  String? _codigoBarras;
 
   // Função para excluir um produto
   Future<void> excluirProduto(String id) async {
     try {
       await FirebaseFirestore.instance.collection('produto').doc(id).delete();
-
       if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Produto excluído com sucesso!')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Produto excluído com sucesso!')),
+        );
       }
     } catch (e) {
       if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao excluir o produto: $e')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao excluir o produto: $e')),
+        );
       }
     }
   }
 
-  //Função para selecionar nova imagem
+  // Função para selecionar nova imagem
   Future<void> _selecionarImagem() async {
     final picker = ImagePicker();
     final PickedFile = await picker.pickImage(source: ImageSource.gallery);
@@ -45,19 +44,31 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
     }
   }
 
-  //Função para fazer upload da nova imagem
-  Future<String?> _uploadImagem (String id) async {
+  // Função para fazer upload da nova imagem
+  Future<String?> _uploadImagem(String id) async {
     if (_novaImagem != null) {
       try {
         final storageRef = FirebaseStorage.instance.ref().child('produtos/$id.jpg');
         await storageRef.putFile(_novaImagem!);
         return await storageRef.getDownloadURL();
       } catch (e) {
-        print ("Erro ao fazer upload da imagem: $e");
+        print("Erro ao fazer upload da imagem: $e");
         return null;
       }
     }
     return null;
+  }
+
+  // Função para escanear o código de barras
+  Future<void> _escanearCodigoBarras() async {
+    try {
+      var result = await BarcodeScanner.scan();
+      setState(() {
+        _codigoBarras = result.rawContent;
+      });
+    } catch (e) {
+      print("Erro ao escanear o código de barras: $e");
+    }
   }
 
   // Função para editar um produto
@@ -67,6 +78,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
       'preco': novoPreco,
       'peso': novoPeso,
       'descricao': novaDescricao,
+      'codigoBarras': _codigoBarras, // Salva o código de barras no produto
     };
 
     if (novaImagemUrl != null) {
@@ -77,19 +89,18 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
       await FirebaseFirestore.instance.collection('produto').doc(id).update(dataAtualizada);
 
       if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Produto atualizado com sucesso!')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Produto atualizado com sucesso!')),
+        );
       }
     } catch (e) {
       if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erro ao atualizar o produto: $e')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erro ao atualizar o produto: $e')),
+        );
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -112,11 +123,12 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
           return ListView(
             children: snapshot.data!.docs.map((doc) {
               String id = doc.id;
-              String nome = doc['nome']; 
+              String nome = doc['nome'];
               String preco = doc['preco'].toString();
               String peso = doc['peso'].toString();
               String descricao = doc['descricao'];
               String imgProduto = doc['imgProduto'];
+              String? codigoBarras = doc['codigoBarras'];
 
               return Card(
                 margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -126,15 +138,14 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                 elevation: 5,
                 child: ListTile(
                   contentPadding: EdgeInsets.all(16.0),
-                  //Exibe a imagem do produto
                   leading: imgProduto.isNotEmpty
-                    ? Image.network(
-                      imgProduto,
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    )
-                    : Icon(Icons.image, size: 50, color: Colors.grey),
+                      ? Image.network(
+                          imgProduto,
+                          width: 50,
+                          height: 50,
+                          fit: BoxFit.cover,
+                        )
+                      : Icon(Icons.image, size: 50, color: Colors.grey),
                   title: Text(
                     nome,
                     style: TextStyle(
@@ -144,7 +155,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                     ),
                   ),
                   subtitle: Text(
-                    'Preço: R\$$preco\nPeso: $peso g',
+                    'Preço: R\$$preco\nPeso: $peso g\nCódigo de Barras: ${codigoBarras ?? "Não cadastrado"}',
                     style: TextStyle(color: Colors.grey[700]),
                   ),
                   trailing: Row(
@@ -191,15 +202,22 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                     SizedBox(height: 10),
                                     TextButton(
                                       onPressed: _selecionarImagem,
-                                       child: Text('Selecionar nova imagem'),
-                                       ),
-                                       _novaImagem != null
-                                        ?Image.file(
-                                          _novaImagem!,
-                                          width: 100,
-                                          height: 100,
-                                        )
-                                        :Container(),
+                                      child: Text('Selecionar nova imagem'),
+                                    ),
+                                    _novaImagem != null
+                                        ? Image.file(
+                                            _novaImagem!,
+                                            width: 100,
+                                            height: 100,
+                                          )
+                                        : Container(),
+                                    TextButton(
+                                      onPressed: _escanearCodigoBarras,
+                                      child: Text('Adicionar código de barras'),
+                                    ),
+                                    _codigoBarras != null
+                                        ? Text('Código de Barras: $_codigoBarras')
+                                        : Container(),
                                   ],
                                 ),
                                 actions: [
@@ -209,13 +227,11 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                   ),
                                   TextButton(
                                     onPressed: () async {
-                                      String ? novaImagemUrl = await _uploadImagem(id);
-
-                                      // Verifique se o widget ainda está montado antes de usar o context
+                                      String? novaImagemUrl = await _uploadImagem(id);
                                       if (mounted) {
-                                      editarProduto(id, novoNome, novoPreco, novoPeso, novaDescricao, novaImagemUrl);
-                                      Navigator.of(context).pop();
-                                    }
+                                        editarProduto(id, novoNome, novoPreco, novoPeso, novaDescricao, novaImagemUrl);
+                                        Navigator.of(context).pop();
+                                      }
                                     },
                                     child: Text('Salvar'),
                                   ),
