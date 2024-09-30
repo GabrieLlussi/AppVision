@@ -121,11 +121,11 @@ class CarrinhoPage extends StatefulWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 55, 117, 199),
+                backgroundColor: const Color.fromARGB(255, 255, 0, 0),
                 padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               ),
               child: Text(
-                'Finalizar Compra',
+                'Carrinho',
                 style: TextStyle(fontSize: 22, color: Colors.black),
               ),
             ),
