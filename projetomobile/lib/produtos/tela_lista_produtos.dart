@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:barcode_scan2/barcode_scan2.dart'; // Adicionado para leitura de código de barras
+import 'package:permission_handler/permission_handler.dart'; // Adicionado para verificar permissões
 
 class TelaListaProdutos extends StatefulWidget {
   @override
@@ -59,15 +60,25 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
     return null;
   }
 
-  // Função para escanear o código de barras
+  // Função para escanear o código de barras com permissão da câmera
   Future<void> _escanearCodigoBarras() async {
-    try {
-      var result = await BarcodeScanner.scan();
-      setState(() {
-        _codigoBarras = result.rawContent;
-      });
-    } catch (e) {
-      print("Erro ao escanear o código de barras: $e");
+    var cameraStatus = await Permission.camera.status;
+
+    if (!cameraStatus.isGranted) {
+      cameraStatus = await Permission.camera.request();
+    }
+
+    if (cameraStatus.isGranted) {
+      try {
+        var result = await BarcodeScanner.scan();
+        setState(() {
+          _codigoBarras = result.rawContent;
+        });
+      } catch (e) {
+        print("Erro ao escanear o código de barras: $e");
+      }
+    } else {
+      print("Permissão da câmera negada.");
     }
   }
 
