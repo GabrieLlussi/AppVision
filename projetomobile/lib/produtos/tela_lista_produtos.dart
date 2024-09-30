@@ -144,38 +144,47 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
              String? codigoBarras = data != null && data.containsKey('codigoBarras') ? data['codigoBarras'] : null;
              
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 10.0),
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 elevation: 5,
                 child: ListTile(
-                  contentPadding: EdgeInsets.all(16.0),
-                  leading: imgProduto.isNotEmpty
-                      ? Image.network(
-                          imgProduto,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        )
-                      : Icon(Icons.image, size: 50, color: Colors.grey),
+                  contentPadding: EdgeInsets.all(20.0),
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(10.0),
+                    child: Container(
+                          width: 70,
+                          height: 70,
+                          color: Colors.grey[200],
+                    child: Image.network(
+                      imgProduto,
+                      fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace)  {
+                            return Icon(Icons.image, size: 100, color: Colors.grey);
+                          },
+                    ),
+                  ),
+                  ),
                   title: Text(
                     nome,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                      color: Colors.teal[700],
+                      fontSize: 24.0,
+                      color: Colors.teal[800],
                     ),
                   ),
                   subtitle: Text(
                     'Preço: R\$$preco\nPeso: $peso g\nCódigo de Barras: ${codigoBarras ?? "Não cadastrado"}',
-                    style: TextStyle(color: Colors.grey[700]),
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: const Color.fromARGB(255, 3, 3, 3)),
                   ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
+                        icon: Icon(Icons.edit, color: Colors.blue, size: 30),
                         onPressed: () {
                           showDialog(
                             context: context,
@@ -255,7 +264,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                         },
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
+                        icon: Icon(Icons.delete, color: Colors.red, size: 30),
                         onPressed: () => excluirProduto(id),
                       ),
                     ],
