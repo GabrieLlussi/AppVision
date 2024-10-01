@@ -52,89 +52,127 @@ class CarrinhoPage extends StatefulWidget {
 
  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Catálogo de produtos'),
-        centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
-      ),
-      body: Column( 
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: produtos.length,
-              itemBuilder: (context, index) {
-                final produto = produtos[index];
-                return Card(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-                  child: ListTile(
-                    leading: produto['imgProduto'] != null && produto['imgProduto'].isNotEmpty
-                    ? Image.network(
-                      produto['imgProduto'],
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    )
-                    : Icon(Icons.image, size: 50, color: Colors.grey),
-                    title: Text(produto['nome']),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}'),
-                        Text('Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g'),
-                        //Text('${(produto['descricao'])}'),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.add_shopping_cart_outlined, color: Colors.red),
-                          onPressed: () => __addToCart(produto),
+  return Scaffold(
+    appBar: AppBar(
+      title: Text('Catálogo de produtos'),
+      centerTitle: true,
+      backgroundColor: const Color.fromARGB(255, 55, 117, 199),
+    ),
+    body: Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: produtos.length,
+            itemBuilder: (context, index) {
+              final produto = produtos[index];
+              return Card(
+                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10.0),
+                        child: Container(
+                          width: 100, // Aumentando o tamanho da imagem aqui
+                          height: 150,
+                          color: Colors.grey[200],
+                          child: produto['imgProduto'] != null &&
+                                  produto['imgProduto'].isNotEmpty
+                              ? Image.network(
+                                  produto['imgProduto'],
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Icon(Icons.image,
+                                        size: 100, color: Colors.grey);
+                                  },
+                                )
+                              : Icon(Icons.image, size: 100, color: Colors.grey),
                         ),
-                        IconButton(
-                          icon: Icon(Icons.info, color: Colors.blue),
-                          onPressed: () {
-                            Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
-                          );
-                          },
+                      ),
+                      SizedBox(width: 16.0), // Espaço entre a imagem e o texto
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              produto['nome'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 24.0,
+                                color: Colors.teal[800],
+                              ),
+                            ),
+                            SizedBox(height: 8.0),
+                            Text(
+                              'Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}\n'
+                              'Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g',
+                              style: TextStyle(
+                                fontSize: 16.0,
+                                color: const Color.fromARGB(255, 3, 3, 3),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            icon: Icon(Icons.add_shopping_cart_outlined,
+                                color: Colors.red, size: 40),
+                            onPressed: () => __addToCart(produto),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.info, color: Colors.blue, size: 45),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      TelaDetalhes(produto: produto),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
-                );
-              },
+                ),
+              );
+            },
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(15.0),
+          child: ElevatedButton(
+            onPressed: () {
+              // Lógica para finalizar a compra
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => Carrinho()),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 255, 0, 0),
+              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+            ),
+            child: Text(
+              'Carrinho',
+              style: TextStyle(fontSize: 25, color: Colors.black),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(15.0),
-            child: ElevatedButton(
-              onPressed: () {
-                // Lógica para finalizar a compra
-                // Navegar para a tela de carrinho de compras
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => Carrinho()),
-                );
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-              ),
-              child: Text(
-                'Carrinho',
-                style: TextStyle(fontSize: 22, color: Colors.black),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-  
+        ),
+      ],
+    ),
+  );
+}  
 }
 
 void main() => runApp(MaterialApp(

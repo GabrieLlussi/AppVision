@@ -117,7 +117,7 @@ class Carrinho extends StatefulWidget {
               children: [
                 Text(
                   'Total: R\$ ${_calcularTotal().toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -134,7 +134,7 @@ class Carrinho extends StatefulWidget {
               ),
               child: Text(
                 'Finalizar Compra',
-                style: TextStyle(fontSize: 22, color: Colors.black,
+                style: TextStyle(fontSize: 30, color: Colors.black,
                 fontWeight: FontWeight.bold,
                 ),
               ),
