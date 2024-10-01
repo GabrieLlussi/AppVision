@@ -57,7 +57,7 @@ class TelaDetalhes extends StatelessWidget {
           Text(
             '${produto['nome']}',
             style: TextStyle(
-              fontSize: 30 * preferredFontSize,
+              fontSize: 34 * preferredFontSize,
               fontWeight: FontWeight.bold,
               color: Colors.black87, // Maior contraste
             ),
@@ -65,16 +65,16 @@ class TelaDetalhes extends StatelessWidget {
           SizedBox(height: 10),
           // Maior destaque para o preço
           Text(
-            'Preço: R\$${produto['preco']}',
+            'R\$${produto['preco']}',
             style: TextStyle(
               fontSize: 26 * preferredFontSize,
               fontWeight: FontWeight.bold,
-              color: Colors.teal[800], // Maior contraste
+              color: const Color.fromRGBO(0, 131, 22, 1), // Maior contraste
             ),
           ),
           SizedBox(height: 10),
           Text(
-            'Peso: ${produto['peso']}g',
+            '${produto['peso']}g',
             style: TextStyle(
               fontSize: 22 * preferredFontSize,
               color: Colors.black87,
@@ -98,6 +98,7 @@ class TelaDetalhes extends StatelessWidget {
               ),
             ),
           ),
+          SizedBox(height: 20),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [

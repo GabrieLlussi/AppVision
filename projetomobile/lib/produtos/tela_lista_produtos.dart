@@ -1,4 +1,4 @@
-import 'package:firebase_storage/firebase_storage.dart'; 
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
@@ -49,7 +49,8 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
   Future<String?> _uploadImagem(String id) async {
     if (_novaImagem != null) {
       try {
-        final storageRef = FirebaseStorage.instance.ref().child('produtos/$id.jpg');
+        final storageRef =
+            FirebaseStorage.instance.ref().child('produtos/$id.jpg');
         await storageRef.putFile(_novaImagem!);
         return await storageRef.getDownloadURL();
       } catch (e) {
@@ -83,7 +84,8 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
   }
 
   // Função para editar um produto
-  Future<void> editarProduto(String id, String novoNome, String novoPreco, String novoPeso, String novaDescricao, String? novaImagemUrl) async {
+  Future<void> editarProduto(String id, String novoNome, String novoPreco,
+      String novoPeso, String novaDescricao, String? novaImagemUrl) async {
     Map<String, dynamic> dataAtualizada = {
       'nome': novoNome,
       'preco': novoPreco,
@@ -97,7 +99,10 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
     }
 
     try {
-      await FirebaseFirestore.instance.collection('produto').doc(id).update(dataAtualizada);
+      await FirebaseFirestore.instance
+          .collection('produto')
+          .doc(id)
+          .update(dataAtualizada);
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -139,128 +144,183 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
               String peso = doc['peso'].toString();
               String descricao = doc['descricao'];
               String imgProduto = doc['imgProduto'];
-              
-              final data = doc.data() as Map<String, dynamic>?; // Fazendo o cast para Map
-             String? codigoBarras = data != null && data.containsKey('codigoBarras') ? data['codigoBarras'] : null;
-             
+
+              final data = doc.data()
+                  as Map<String, dynamic>?; // Fazendo o cast para Map
+              String? codigoBarras =
+                  data != null && data.containsKey('codigoBarras')
+                      ? data['codigoBarras']
+                      : null;
+
               return Card(
-                margin: const EdgeInsets.symmetric(vertical: 10.0),
+                margin: const EdgeInsets.symmetric(vertical: 8.0),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
                 elevation: 5,
-                child: ListTile(
-                  contentPadding: EdgeInsets.all(16.0),
-                  leading: imgProduto.isNotEmpty
-                      ? Image.network(
-                          imgProduto,
-                          width: 50,
-                          height: 50,
-                          fit: BoxFit.cover,
-                        )
-                      : Icon(Icons.image, size: 50, color: Colors.grey),
-                  title: Text(
-                    nome,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18.0,
-                      color: Colors.teal[700],
-                    ),
-                  ),
-                  subtitle: Text(
-                    'Preço: R\$$preco\nPeso: $peso g\nCódigo de Barras: ${codigoBarras ?? "Não cadastrado"}',
-                    style: TextStyle(color: Colors.grey[700]),
-                  ),
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit, color: Colors.blue),
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              String novoNome = nome;
-                              String novoPreco = preco.toString();
-                              String novoPeso = peso.toString();
-                              String novaDescricao = descricao;
-
-                              return AlertDialog(
-                                title: Text('Editar Produto'),
-                                content: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    TextField(
-                                      decoration: InputDecoration(labelText: 'Nome do Produto'),
-                                      onChanged: (value) => novoNome = value,
-                                      controller: TextEditingController(text: nome),
-                                    ),
-                                    TextField(
-                                      decoration: InputDecoration(labelText: 'Preço'),
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (value) => novoPreco = value,
-                                      controller: TextEditingController(text: preco.toString()),
-                                    ),
-                                    TextField(
-                                      decoration: InputDecoration(labelText: 'Peso (g)'),
-                                      keyboardType: TextInputType.number,
-                                      onChanged: (value) => novoPeso = value,
-                                      controller: TextEditingController(text: peso.toString()),
-                                    ),
-                                    TextField(
-                                      decoration: InputDecoration(labelText: 'Descrição'),
-                                      onChanged: (value) => novaDescricao = value,
-                                      controller: TextEditingController(text: descricao),
-                                    ),
-                                    SizedBox(height: 10),
-                                    TextButton(
-                                      onPressed: _selecionarImagem,
-                                      child: Text('Selecionar nova imagem'),
-                                    ),
-                                    _novaImagem != null
-                                        ? Image.file(
-                                            _novaImagem!,
-                                            width: 100,
-                                            height: 100,
-                                          )
-                                        : Container(),
-                                    TextButton(
-                                      onPressed: _escanearCodigoBarras,
-                                      child: Text('Adicionar código de barras'),
-                                    ),
-                                    _codigoBarras != null
-                                        ? Text('Código de Barras: $_codigoBarras')
-                                        : Container(),
-                                  ],
+                child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10.0),
+                          child: Container(
+                            width: 100, // Aumente o tamanho da imagem aqui
+                            height: 150,
+                            color: Colors.grey[200],
+                            child: Image.network(
+                              imgProduto,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Icon(Icons.image,
+                                    size: 100, color: Colors.grey);
+                              },
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                            width:
+                                16.0), // Espaçamento entre a imagem e o conteúdo textual
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                nome,
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 24.0,
+                                  color: Colors.teal[800],
                                 ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(),
-                                    child: Text('Cancelar'),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      String? novaImagemUrl = await _uploadImagem(id);
-                                      if (mounted) {
-                                        editarProduto(id, novoNome, novoPreco, novoPeso, novaDescricao, novaImagemUrl);
-                                        Navigator.of(context).pop();
-                                      }
-                                    },
-                                    child: Text('Salvar'),
-                                  ),
-                                ],
-                              );
-                            },
-                          );
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete, color: Colors.red),
-                        onPressed: () => excluirProduto(id),
-                      ),
-                    ],
-                  ),
-                ),
+                              ),
+                              SizedBox(height: 8.0),
+                              Text(
+                                'Preço: R\$ $preco\nPeso: $peso g\nCódigo de Barras: ${codigoBarras ?? "Não cadastrado"}',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                  color: const Color.fromARGB(255, 3, 3, 3),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit,
+                                  color: Colors.blue, size: 30),
+                              onPressed: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (context) {
+                                    String novoNome = nome;
+                                    String novoPreco = preco.toString();
+                                    String novoPeso = peso.toString();
+                                    String novaDescricao = descricao;
+
+                                    return AlertDialog(
+                                      title: Text('Editar Produto'),
+                                      content: Column(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          TextField(
+                                            decoration: InputDecoration(
+                                                labelText: 'Nome do Produto'),
+                                            onChanged: (value) =>
+                                                novoNome = value,
+                                            controller: TextEditingController(
+                                                text: nome),
+                                          ),
+                                          TextField(
+                                            decoration: InputDecoration(
+                                                labelText: 'Preço'),
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (value) =>
+                                                novoPreco = value,
+                                            controller: TextEditingController(
+                                                text: preco.toString()),
+                                          ),
+                                          TextField(
+                                            decoration: InputDecoration(
+                                                labelText: 'Peso (g)'),
+                                            keyboardType: TextInputType.number,
+                                            onChanged: (value) =>
+                                                novoPeso = value,
+                                            controller: TextEditingController(
+                                                text: peso.toString()),
+                                          ),
+                                          TextField(
+                                            decoration: InputDecoration(
+                                                labelText: 'Descrição'),
+                                            onChanged: (value) =>
+                                                novaDescricao = value,
+                                            controller: TextEditingController(
+                                                text: descricao),
+                                          ),
+                                          SizedBox(height: 10),
+                                          TextButton(
+                                            onPressed: _selecionarImagem,
+                                            child:
+                                                Text('Selecionar nova imagem'),
+                                          ),
+                                          _novaImagem != null
+                                              ? Image.file(
+                                                  _novaImagem!,
+                                                  width: 100,
+                                                  height: 100,
+                                                )
+                                              : Container(),
+                                          TextButton(
+                                            onPressed: _escanearCodigoBarras,
+                                            child: Text(
+                                                'Adicionar código de barras'),
+                                          ),
+                                          _codigoBarras != null
+                                              ? Text(
+                                                  'Código de Barras: $_codigoBarras')
+                                              : Container(),
+                                        ],
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: Text('Cancelar'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () async {
+                                            String? novaImagemUrl =
+                                                await _uploadImagem(id);
+                                            if (mounted) {
+                                              editarProduto(
+                                                  id,
+                                                  novoNome,
+                                                  novoPreco,
+                                                  novoPeso,
+                                                  novaDescricao,
+                                                  novaImagemUrl);
+                                              Navigator.of(context).pop();
+                                            }
+                                          },
+                                          child: Text('Salvar'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.delete,
+                                  color: Colors.red, size: 30),
+                              onPressed: () => excluirProduto(id),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )),
               );
             }).toList(),
           );
