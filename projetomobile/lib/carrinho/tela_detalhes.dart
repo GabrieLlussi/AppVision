@@ -88,7 +88,7 @@ class TelaDetalhes extends StatelessWidget {
                   padding: EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.black54, width: 2.0),
-                    borderRadius: BorderRadius.circular(8.0),
+                    borderRadius: BorderRadius.circular(6.0),
                   ),
                   child: Text('${produto['descricao']}',
                   style: TextStyle(
