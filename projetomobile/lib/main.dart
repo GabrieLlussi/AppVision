@@ -15,8 +15,7 @@ void main() async {
   );
   runApp(MyApp());
 }
-
-class MyApp extends StatelessWidget {
+  class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -24,12 +23,23 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: HomePage(),
+      home: HomePage(), // Carrega a HomePage que é um StatefulWidget
     );
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  @override
+  _HomePageState createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  Future<void> _reloadData() async {
+    setState(() {
+
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // Obter o tamanho preferido da fonte do usuário
@@ -43,6 +53,10 @@ class HomePage extends StatelessWidget {
         ),
         backgroundColor: const Color.fromARGB(255, 55, 117, 199),
         actions: [
+          IconButton(
+          onPressed: _reloadData, 
+          icon: Icon(Icons.refresh),
+          ),
           Builder(
               builder: (context) {
                 return IconButton(
