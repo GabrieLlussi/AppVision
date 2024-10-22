@@ -5,6 +5,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 
 class TelaCadastroProduto extends StatefulWidget {
+  const TelaCadastroProduto({super.key});
+
   @override
   TelaCadastroProdutoState createState() => TelaCadastroProdutoState();
 }
@@ -48,7 +50,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
   Future<void> salvarProduto() async {
     if (imgProduto == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor escolha uma imagem')),
+        const SnackBar(content: Text('Por favor escolha uma imagem')),
       );
       return;
     }
@@ -74,7 +76,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Produto salvo com sucesso!')),
+        const SnackBar(content: Text('Produto salvo com sucesso!')),
       );
 
       setState(() {
@@ -110,7 +112,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
   Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: Text('Cadastro de Produto'),
+      title: const Text('Cadastro de Produto'),
       backgroundColor: const Color.fromARGB(255, 55, 117, 199),
     ),
     body: SingleChildScrollView(
@@ -121,15 +123,15 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Adicionar o texto de instrução
-            Text(
+            const Text(
               'Preencha as informações do produto:',
               style: TextStyle(
                 fontSize: 20.0, // Tamanho da fonte
                 fontWeight: FontWeight.bold, // Negrito
-                color: const Color.fromARGB(255, 0, 0, 0), // Cor do texto
+                color: Color.fromARGB(255, 0, 0, 0), // Cor do texto
               ),
             ),
-            SizedBox(height: 15), // Espaço entre o texto e o formulário
+            const SizedBox(height: 15), // Espaço entre o texto e o formulário
             // Card para os campos do formulário
             Card(
               shape: RoundedRectangleBorder(
@@ -143,7 +145,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Nome do Produto',
-                        labelStyle: TextStyle(color: Colors.teal),
+                        labelStyle: const TextStyle(color: Colors.teal),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -160,11 +162,11 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Preço',
-                        labelStyle: TextStyle(color: Colors.teal),
+                        labelStyle: const TextStyle(color: Colors.teal),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -182,11 +184,11 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Peso (g)',
-                        labelStyle: TextStyle(color: Colors.teal),
+                        labelStyle: const TextStyle(color: Colors.teal),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -204,11 +206,11 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Descrição',
-                        labelStyle: TextStyle(color: Colors.teal),
+                        labelStyle: const TextStyle(color: Colors.teal),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -225,19 +227,19 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                         return null;
                       },
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     ElevatedButton(
                       onPressed: escolherImagem,
-                      child: Text('Escolher Imagem'),
+                      child: const Text('Escolher Imagem'),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     if (imgProduto != null)
                       Image.file(imgProduto!, height: 150),
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Botões de cancelar e salvar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -247,12 +249,12 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 209, 7, 7),
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text('Cancelar'),
+                  child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
                   onPressed: isLoading
@@ -265,13 +267,13 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 36, 102, 41),
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: isLoading
-                      ? SizedBox(
+                      ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -279,7 +281,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                             strokeWidth: 2,
                           ),
                         )
-                      : Text('Salvar'),
+                      : const Text('Salvar'),
                 ),
               ],
             ),

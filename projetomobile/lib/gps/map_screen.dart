@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class MapScreen extends StatefulWidget {
+  const MapScreen({super.key});
+
   @override
   _MapScreenState createState() => _MapScreenState();
 }
@@ -27,14 +29,14 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Selecionar Local'),
+        title: const Text('Selecionar Local'),
       ),
       body: Stack(
         children: [
           // Mapa ocupa todo o espaço
           GoogleMap(
             onMapCreated: _onMapCreated,
-            initialCameraPosition: CameraPosition(
+            initialCameraPosition: const CameraPosition(
               target: LatLng(-15.7942, -47.8822), // Posição inicial no mapa
               zoom: 10,
             ),
@@ -42,7 +44,7 @@ class _MapScreenState extends State<MapScreen> {
             markers: selectedLocation != null
                 ? {
                     Marker(
-                      markerId: MarkerId('selected-location'),
+                      markerId: const MarkerId('selected-location'),
                       position: selectedLocation!,
                     )
                   }
@@ -57,7 +59,7 @@ class _MapScreenState extends State<MapScreen> {
                 onPressed: () {
                   Navigator.pop(context, selectedLocation); // Retorna as coordenadas para a tela anterior
                 },
-                child: Icon(Icons.check),
+                child: const Icon(Icons.check),
               ),
             ),
           ),

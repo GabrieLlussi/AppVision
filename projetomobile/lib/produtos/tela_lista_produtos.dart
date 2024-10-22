@@ -7,6 +7,8 @@ import 'package:barcode_scan2/barcode_scan2.dart'; // Adicionado para leitura de
 import 'package:permission_handler/permission_handler.dart'; // Adicionado para verificar permissões
 
 class TelaListaProdutos extends StatefulWidget {
+  const TelaListaProdutos({super.key});
+
   @override
   _TelaListaProdutosState createState() => _TelaListaProdutosState();
 }
@@ -21,7 +23,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
       await FirebaseFirestore.instance.collection('produto').doc(id).delete();
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Produto excluído com sucesso!')),
+          const SnackBar(content: Text('Produto excluído com sucesso!')),
         );
       }
     } catch (e) {
@@ -106,7 +108,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Produto atualizado com sucesso!')),
+          const SnackBar(content: Text('Produto atualizado com sucesso!')),
         );
       }
     } catch (e) {
@@ -122,18 +124,18 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lista de Produtos'),
+        title: const Text('Lista de Produtos'),
         backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
       body: StreamBuilder(
         stream: FirebaseFirestore.instance.collection('produto').snapshots(),
         builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-            return Center(child: Text('Nenhum produto cadastrado.'));
+            return const Center(child: Text('Nenhum produto cadastrado.'));
           }
 
           return ListView(
@@ -173,13 +175,13 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                               imgProduto,
                               fit: BoxFit.contain,
                               errorBuilder: (context, error, stackTrace) {
-                                return Icon(Icons.image,
+                                return const Icon(Icons.image,
                                     size: 100, color: Colors.grey);
                               },
                             ),
                           ),
                         ),
-                        SizedBox(
+                        const SizedBox(
                             width:
                                 16.0), // Espaçamento entre a imagem e o conteúdo textual
                         Expanded(
@@ -194,12 +196,12 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                   color: Colors.teal[800],
                                 ),
                               ),
-                              SizedBox(height: 8.0),
+                              const SizedBox(height: 8.0),
                               Text(
                                 'Preço: R\$ $preco\nPeso: $peso g\nCódigo de Barras: ${codigoBarras ?? "Não cadastrado"}',
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 16.0,
-                                  color: const Color.fromARGB(255, 3, 3, 3),
+                                  color: Color.fromARGB(255, 3, 3, 3),
                                 ),
                               ),
                             ],
@@ -209,7 +211,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
-                              icon: Icon(Icons.edit,
+                              icon: const Icon(Icons.edit,
                                   color: Colors.blue, size: 30),
                               onPressed: () {
                                 showDialog(
@@ -221,12 +223,12 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                     String novaDescricao = descricao;
 
                                     return AlertDialog(
-                                      title: Text('Editar Produto'),
+                                      title: const Text('Editar Produto'),
                                       content: Column(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
                                           TextField(
-                                            decoration: InputDecoration(
+                                            decoration: const InputDecoration(
                                                 labelText: 'Nome do Produto'),
                                             onChanged: (value) =>
                                                 novoNome = value,
@@ -234,7 +236,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                                 text: nome),
                                           ),
                                           TextField(
-                                            decoration: InputDecoration(
+                                            decoration: const InputDecoration(
                                                 labelText: 'Preço'),
                                             keyboardType: TextInputType.number,
                                             onChanged: (value) =>
@@ -243,7 +245,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                                 text: preco.toString()),
                                           ),
                                           TextField(
-                                            decoration: InputDecoration(
+                                            decoration: const InputDecoration(
                                                 labelText: 'Peso (g)'),
                                             keyboardType: TextInputType.number,
                                             onChanged: (value) =>
@@ -252,18 +254,18 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                                 text: peso.toString()),
                                           ),
                                           TextField(
-                                            decoration: InputDecoration(
+                                            decoration: const InputDecoration(
                                                 labelText: 'Descrição'),
                                             onChanged: (value) =>
                                                 novaDescricao = value,
                                             controller: TextEditingController(
                                                 text: descricao),
                                           ),
-                                          SizedBox(height: 10),
+                                          const SizedBox(height: 10),
                                           TextButton(
                                             onPressed: _selecionarImagem,
                                             child:
-                                                Text('Selecionar nova imagem'),
+                                                const Text('Selecionar nova imagem'),
                                           ),
                                           _novaImagem != null
                                               ? Image.file(
@@ -274,7 +276,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                               : Container(),
                                           TextButton(
                                             onPressed: _escanearCodigoBarras,
-                                            child: Text(
+                                            child: const Text(
                                                 'Adicionar código de barras'),
                                           ),
                                           _codigoBarras != null
@@ -287,7 +289,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                         TextButton(
                                           onPressed: () =>
                                               Navigator.of(context).pop(),
-                                          child: Text('Cancelar'),
+                                          child: const Text('Cancelar'),
                                         ),
                                         TextButton(
                                           onPressed: () async {
@@ -304,7 +306,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                               Navigator.of(context).pop();
                                             }
                                           },
-                                          child: Text('Salvar'),
+                                          child: const Text('Salvar'),
                                         ),
                                       ],
                                     );
@@ -313,7 +315,7 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                               },
                             ),
                             IconButton(
-                              icon: Icon(Icons.delete,
+                              icon: const Icon(Icons.delete,
                                   color: Colors.red, size: 30),
                               onPressed: () => excluirProduto(id),
                             ),

@@ -6,6 +6,8 @@ import 'package:projetomobile/carrinho/tela_detalhes.dart';
 
 
 class CarrinhoPage extends StatefulWidget {
+  const CarrinhoPage({super.key});
+
   @override
   _CarrinhoPageState createState() => _CarrinhoPageState();
 }
@@ -54,7 +56,7 @@ class CarrinhoPage extends StatefulWidget {
   Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: Text('Catálogo de produtos'),
+      title: const Text('Catálogo de produtos'),
       centerTitle: true,
       backgroundColor: const Color.fromARGB(255, 55, 117, 199),
     ),
@@ -66,7 +68,7 @@ class CarrinhoPage extends StatefulWidget {
             itemBuilder: (context, index) {
               final produto = produtos[index];
               return Card(
-                margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -88,14 +90,14 @@ class CarrinhoPage extends StatefulWidget {
                                   produto['imgProduto'],
                                   fit: BoxFit.contain,
                                   errorBuilder: (context, error, stackTrace) {
-                                    return Icon(Icons.image,
+                                    return const Icon(Icons.image,
                                         size: 100, color: Colors.grey);
                                   },
                                 )
-                              : Icon(Icons.image, size: 100, color: Colors.grey),
+                              : const Icon(Icons.image, size: 100, color: Colors.grey),
                         ),
                       ),
-                      SizedBox(width: 16.0), // Espaço entre a imagem e o texto
+                      const SizedBox(width: 16.0), // Espaço entre a imagem e o texto
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -108,13 +110,13 @@ class CarrinhoPage extends StatefulWidget {
                                 color: Colors.teal[800],
                               ),
                             ),
-                            SizedBox(height: 8.0),
+                            const SizedBox(height: 8.0),
                             Text(
                               'Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}\n'
                               'Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g',
-                              style: TextStyle(
+                              style: const TextStyle(
                                 fontSize: 16.0,
-                                color: const Color.fromARGB(255, 3, 3, 3),
+                                color: Color.fromARGB(255, 3, 3, 3),
                               ),
                             ),
                           ],
@@ -124,12 +126,12 @@ class CarrinhoPage extends StatefulWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           IconButton(
-                            icon: Icon(Icons.add_shopping_cart_outlined,
+                            icon: const Icon(Icons.add_shopping_cart_outlined,
                                 color: Colors.red, size: 40),
                             onPressed: () => __addToCart(produto),
                           ),
                           IconButton(
-                            icon: Icon(Icons.info, color: Colors.blue, size: 45),
+                            icon: const Icon(Icons.info, color: Colors.blue, size: 45),
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -161,9 +163,9 @@ class CarrinhoPage extends StatefulWidget {
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-              padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
             ),
-            child: Text(
+            child: const Text(
               'Carrinho',
               style: TextStyle(fontSize: 25, color: Colors.black),
             ),

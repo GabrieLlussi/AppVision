@@ -6,7 +6,7 @@ import 'package:projetomobile/carrinho/carrinho.dart';
 class TelaDetalhes extends StatelessWidget {
   final Map<String, dynamic> produto; // ou outro tipo dependendo de como seu produto está definido
 
-  TelaDetalhes({required this.produto});
+  TelaDetalhes({super.key, required this.produto});
 
   void _addToCart(BuildContext context, Map<String, dynamic> produto) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -44,7 +44,7 @@ class TelaDetalhes extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Imagem grande do produto
-          Container(
+          SizedBox(
             height: 400, // Altura maior para a imagem
             width: double.infinity, // Largura total da tela
             child: Image.network(
@@ -52,7 +52,7 @@ class TelaDetalhes extends StatelessWidget {
               fit: BoxFit.cover, // Preencher o container
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           // Exibir o nome do produto com maior destaque
           Text(
             '${produto['nome']}',
@@ -62,7 +62,7 @@ class TelaDetalhes extends StatelessWidget {
               color: Colors.black87, // Maior contraste
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           // Maior destaque para o preço
           Text(
             'R\$${produto['preco']}',
@@ -72,7 +72,7 @@ class TelaDetalhes extends StatelessWidget {
               color: const Color.fromRGBO(0, 131, 22, 1), // Maior contraste
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           Text(
             '${produto['peso']}g',
             style: TextStyle(
@@ -80,12 +80,12 @@ class TelaDetalhes extends StatelessWidget {
               color: Colors.black87,
             ),
           ),
-          SizedBox(height: 10),
+          const SizedBox(height: 10),
           
           GestureDetector(
               onTap: () => _falarDescricao(produto['descricao'] ?? 'Descrição não disponível'),
                 child: Container(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   decoration: BoxDecoration(
                     border: Border.all(color: Colors.black54, width: 2.0),
                     borderRadius: BorderRadius.circular(6.0),
@@ -98,7 +98,7 @@ class TelaDetalhes extends StatelessWidget {
               ),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -110,7 +110,7 @@ class TelaDetalhes extends StatelessWidget {
                     _addToCart(context, produto);
                     // Fornecer feedback auditivo
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
+                      const SnackBar(
                         content: Text('Produto adicionado ao carrinho.'),
                       ),
                     );
@@ -123,11 +123,11 @@ class TelaDetalhes extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.lime,
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
                   ),
                 ),
               ),
-              SizedBox(width: 20),
+              const SizedBox(width: 20),
               Semantics(
                 label: 'Ir para o carrinho de compras',
                 child: ElevatedButton.icon(
@@ -145,7 +145,7 @@ class TelaDetalhes extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
                   ),
                 ),
               ),

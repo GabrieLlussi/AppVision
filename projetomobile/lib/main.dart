@@ -16,10 +16,12 @@ void main() async {
   runApp(MyApp());
 }
   class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Vision+',
+      title: 'Vision plus',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
@@ -29,6 +31,8 @@ void main() async {
 }
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
   _HomePageState createState() => _HomePageState();
 }
@@ -55,12 +59,12 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
           onPressed: _reloadData, 
-          icon: Icon(Icons.refresh),
+          icon: const Icon(Icons.refresh),
           ),
           Builder(
               builder: (context) {
                 return IconButton(
-                  icon: Icon(Icons.menu), // Ícone do menu hamburger
+                  icon: const Icon(Icons.menu), // Ícone do menu hamburger
                   onPressed: () {
                     // Ação ao clicar no botão
                     Scaffold.of(context).openEndDrawer();
@@ -77,14 +81,14 @@ class _HomePageState extends State<HomePage> {
           padding: EdgeInsets.zero,
           children: <Widget>[
             DrawerHeader(
-              child: Image.asset('assets/visionPlusIcon.png'),
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: Colors.blue,
               ),
+              child: Image.asset('assets/visionPlusIcon.png'),
             ),
             
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Produtos',
                 style: TextStyle(
@@ -95,8 +99,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.add_circle_outline),
-              title: Text('Cadastrar produtos'),
+              leading: const Icon(Icons.add_circle_outline),
+              title: const Text('Cadastrar produtos'),
               onTap: () {
                 // Ação do botão Home
                 Navigator.push(
@@ -106,8 +110,8 @@ class _HomePageState extends State<HomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.edit_outlined),
-              title: Text('Catálogo de produtos'),
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Catálogo de produtos'),
               onTap: () {
                 // Ação do botão Configurações
                 Navigator.push(
@@ -116,8 +120,8 @@ class _HomePageState extends State<HomePage> {
                 ); // Fechar o drawer
               },
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Supermercados',
                 style: TextStyle(
@@ -128,8 +132,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.add_circle_outline),
-              title: Text('Cadastrar estabelecimentos'),
+              leading: const Icon(Icons.add_circle_outline),
+              title: const Text('Cadastrar estabelecimentos'),
               onTap: () {
                 // Ação do botão Home
                 Navigator.push(
@@ -138,8 +142,8 @@ class _HomePageState extends State<HomePage> {
                 ); // Fechar o drawer
               },
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
               child: Text(
                 'Informações',
                 style: TextStyle(
@@ -150,8 +154,8 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             ListTile(
-              leading: Icon(Icons.gps_fixed),
-              title: Text('Coordenadas'),
+              leading: const Icon(Icons.gps_fixed),
+              title: const Text('Coordenadas'),
               onTap: () {
                 // Ação do botão Sobre
                 Navigator.pop(context); // Fechar o drawer
@@ -168,17 +172,17 @@ class _HomePageState extends State<HomePage> {
           future: FirebaseFirestore.instance.collection('mercado').get(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             }
 
             if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-              return Center(child: Text('Nenhum estabelecimento disponível.'));
+              return const Center(child: Text('Nenhum estabelecimento disponível.'));
             }
 
             var mercados = snapshot.data!.docs;
 
             return GridView.builder(
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, //Num de colunas
                 mainAxisSpacing: 10.0,
                 crossAxisSpacing: 10.0,

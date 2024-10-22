@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 //import 'package:firebase_core/firebase_core.dart';
 
 class Carrinho extends StatefulWidget {
+  const Carrinho({super.key});
+
   @override
   _CarrinhoState createState() => _CarrinhoState();
 }
@@ -63,7 +65,7 @@ class Carrinho extends StatefulWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Carrinho de Compras'),
+        title: const Text('Carrinho de Compras'),
         centerTitle: true,
         backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
@@ -71,13 +73,13 @@ class Carrinho extends StatefulWidget {
         children: [
           Expanded(
             child: carrinho.isEmpty
-              ? Center(child: Text('Carrinho vazio'))
+              ? const Center(child: Text('Carrinho vazio'))
             : ListView.builder(
               itemCount: carrinho.length,
               itemBuilder: (context, index) {
                 final produto = carrinho[index];
                 return Card(
-                  margin: EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+                  margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
                   child: ListTile(
                     leading: produto['imgProduto'] != null && produto['imgProduto'].isNotEmpty
                     ? Image.network(
@@ -86,7 +88,7 @@ class Carrinho extends StatefulWidget {
                       height: 50,
                       fit: BoxFit.cover,
                     )
-                    : Icon(Icons.image, size: 50, color: Colors.grey),
+                    : const Icon(Icons.image, size: 50, color: Colors.grey),
 
                     title: Text(produto['nome']),
                     subtitle: Column(
@@ -100,7 +102,7 @@ class Carrinho extends StatefulWidget {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () => _removeFromCart(produto['id']),
                         ),
                       ],
@@ -117,7 +119,7 @@ class Carrinho extends StatefulWidget {
               children: [
                 Text(
                   'Total: R\$ ${_calcularTotal().toStringAsFixed(2)}',
-                  style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -130,9 +132,9 @@ class Carrinho extends StatefulWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 55, 117, 199),
-                padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
               ),
-              child: Text(
+              child: const Text(
                 'Finalizar Compra',
                 style: TextStyle(fontSize: 30, color: Colors.black,
                 fontWeight: FontWeight.bold,

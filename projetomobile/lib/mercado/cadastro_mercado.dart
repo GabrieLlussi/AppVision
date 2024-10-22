@@ -6,6 +6,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:projetomobile/gps/map_screen.dart';
 
 class CadastroMercado extends StatefulWidget {
+  const CadastroMercado({super.key});
+
   @override
   CadastroMercadoState createState() => CadastroMercadoState();
 }
@@ -48,14 +50,14 @@ class CadastroMercadoState extends State<CadastroMercado> {
   Future<void> salvarMercado() async {
     if (imgMercado == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor escolha uma imagem')),
+        const SnackBar(content: Text('Por favor escolha uma imagem')),
       );
       return;
     }
 
     if (latitude == null || longitude == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Por favor, selecione um local no mapa')),
+        const SnackBar(content: Text('Por favor, selecione um local no mapa')),
       );
       return;
     }
@@ -80,7 +82,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Estabelecimento salvo com sucesso!')),
+        const SnackBar(content: Text('Estabelecimento salvo com sucesso!')),
       );
 
       setState(() {
@@ -131,7 +133,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
   Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: Text('Cadastro de Estabelecimentos'),
+      title: const Text('Cadastro de Estabelecimentos'),
       backgroundColor: const Color.fromARGB(255, 55, 117, 199),
     ),
     body: SingleChildScrollView(
@@ -142,15 +144,15 @@ class CadastroMercadoState extends State<CadastroMercado> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Adicionar o texto de instrução
-            Text(
+            const Text(
               'Preencha as informações do estabelecimento:',
               style: TextStyle(
                 fontSize: 20.0, // Tamanho da fonte
                 fontWeight: FontWeight.bold, // Negrito
-                color: const Color.fromARGB(255, 0, 0, 0), // Cor do texto
+                color: Color.fromARGB(255, 0, 0, 0), // Cor do texto
               ),
             ),
-            SizedBox(height: 15), // Espaço entre o texto e o formulário
+            const SizedBox(height: 15), // Espaço entre o texto e o formulário
             // Card para os campos do formulário
             Card(
               shape: RoundedRectangleBorder(
@@ -164,7 +166,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
                     TextFormField(
                       decoration: InputDecoration(
                         labelText: 'Nome do estabelecimento',
-                        labelStyle: TextStyle(color: Colors.teal),
+                        labelStyle: const TextStyle(color: Colors.teal),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10.0),
                         ),
@@ -184,15 +186,15 @@ class CadastroMercadoState extends State<CadastroMercado> {
                     
                     ElevatedButton(
                       onPressed: escolherImagem,
-                      child: Text('Escolher Imagem'),
+                      child: const Text('Escolher Imagem'),
                     ),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     if (imgMercado != null)
                       Image.file(imgMercado!, height: 150),
-                    SizedBox(height: 15),
+                    const SizedBox(height: 15),
                     ElevatedButton(
                       onPressed: _acessoMaps, 
-                      child: Text('Selecionar o local no mapa'),
+                      child: const Text('Selecionar o local no mapa'),
                       ),
                       if(latitude != null && longitude !=null)
                         Text('Local selecionado: Lat: $latitude, Lon: $longitude'),
@@ -200,7 +202,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             // Botões de cancelar e salvar
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -210,12 +212,12 @@ class CadastroMercadoState extends State<CadastroMercado> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 209, 7, 7),
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
-                  child: Text('Cancelar'),
+                  child: const Text('Cancelar'),
                 ),
                 ElevatedButton(
                   onPressed: isLoading
@@ -228,13 +230,13 @@ class CadastroMercadoState extends State<CadastroMercado> {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 36, 102, 41),
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 15),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: isLoading
-                      ? SizedBox(
+                      ? const SizedBox(
                           width: 20,
                           height: 20,
                           child: CircularProgressIndicator(
@@ -242,7 +244,7 @@ class CadastroMercadoState extends State<CadastroMercado> {
                             strokeWidth: 2,
                           ),
                         )
-                      : Text('Salvar'),
+                      : const Text('Salvar'),
                 ),
               ],
             ),
