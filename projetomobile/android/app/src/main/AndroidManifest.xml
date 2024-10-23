@@ -62,8 +62,12 @@
     <queries>
         <intent>
             <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <action android:name="android.speech.RecognitionService" />
             <data android:mimeType="text/plain"/>
         </intent>
+    <!-- Query para o reconhecimento de fala -->
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+
     </queries>
 </manifest>
