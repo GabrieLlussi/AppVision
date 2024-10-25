@@ -3,8 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:barcode_scan2/barcode_scan2.dart'; // Adicionado para leitura de código de barras
-import 'package:permission_handler/permission_handler.dart'; // Adicionado para verificar permissões
+import 'package:mobile_scanner/mobile_scanner.dart'; 
 
 class TelaListaProdutos extends StatefulWidget {
   const TelaListaProdutos({super.key});
@@ -65,24 +64,30 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
 
   // Função para escanear o código de barras com permissão da câmera
   Future<void> _escanearCodigoBarras() async {
-    var cameraStatus = await Permission.camera.status;
-
-    if (!cameraStatus.isGranted) {
-      cameraStatus = await Permission.camera.request();
-    }
-
-    if (cameraStatus.isGranted) {
-      try {
-        var result = await BarcodeScanner.scan();
-        setState(() {
-          _codigoBarras = result.rawContent;
-        });
-      } catch (e) {
-        print("Erro ao escanear o código de barras: $e");
+    showDialog(
+      context: context, 
+      builder:(BuildContext context) {
+        return AlertDialog(
+          content: SizedBox(
+            width: 300,
+            height: 400,
+            child: MobileScanner(
+              onDetect: (BarcodeCapture barcodeCapture) {
+                final List<Barcode> barcodes = barcodeCapture.barcodes;
+                if (barcodes.isNotEmpty){
+                final String? code = barcodes.first.rawValue;
+                if (code != null) {
+                  setState(() {
+                    _codigoBarras = code;
+                  });
+                  Navigator.of(context).pop();
+                }
+              }},
+            )
+          ),
+        );
       }
-    } else {
-      print("Permissão da câmera negada.");
-    }
+    );
   }
 
   // Função para editar um produto

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:barcode_scan2/barcode_scan2.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
+
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class CarrinhoPage extends StatefulWidget {
   const CarrinhoPage({super.key});
@@ -14,12 +14,14 @@ class CarrinhoPage extends StatefulWidget {
 
 class _CarrinhoPageState extends State<CarrinhoPage> {
   List<Map<String, dynamic>> produtos = [];
+  MobileScannerController scannerController = MobileScannerController();
+  bool isScanning = true;
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos();
-    _startBarcodeScannerInBackground(); // Inicia o escaneamento em segundo plano
+    scannerController.start();
   }
 
   void _fetchProdutos() async {
@@ -43,89 +45,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     });
   }
 
-  Future<void> _startBarcodeScannerInBackground() async {
-    var cameraStatus = await Permission.camera.status;
-
-    if (!cameraStatus.isGranted) {
-      cameraStatus = await Permission.camera.request();
-    }
-
-    if (cameraStatus.isGranted) {
-      while (mounted) {
-        try {
-          var result = await BarcodeScanner.scan(); // Lê o código de barras
-          if (result.rawContent.isNotEmpty) {
-            _buscarProdutoPorCodigoBarras(result.rawContent);
-          }
-        } catch (e) {
-          print("Erro ao escanear o código de barras: $e");
-        }
-        await Future.delayed(Duration(seconds: 5)); // Atraso antes de escanear novamente
-      }
-    } else {
-      print("Permissão da câmera negada.");
-    }
-  }
-
-  void _buscarProdutoPorCodigoBarras(String codigoBarras) async {
-    FirebaseFirestore firestore = FirebaseFirestore.instance;
-
-    QuerySnapshot snapshot = await firestore
-        .collection('produto')
-        .where('codigoBarras', isEqualTo: codigoBarras)
-        .get();
-
-    Future<void> _escanearCodigoBarras() async {
-  var cameraStatus = await Permission.camera.status;
-
-  if (!cameraStatus.isGranted) {
-    cameraStatus = await Permission.camera.request();
-  }
-
-  if (cameraStatus.isGranted) {
-    try {
-      var result = await BarcodeScanner.scan();
-      String codigoBarrasEscaneado = result.rawContent;
-
-      // Verifica se o código de barras foi escaneado corretamente
-      if (codigoBarrasEscaneado.isNotEmpty) {
-        // Busca o produto no Firestore com base no código de barras escaneado
-        var produtoSnap = await FirebaseFirestore.instance
-            .collection('produto')
-            .where('codigoBarras', isEqualTo: codigoBarrasEscaneado)
-            .get();
-
-        // Verifica se encontrou algum produto
-        if (produtoSnap.docs.isNotEmpty) {
-          final fproduto = produtoSnap.docs.first.data() as Map<String, dynamic>?; // Obtém o primeiro produto
-
-          if (fproduto != null && fproduto.containsKey('nome') && fproduto['nome'] != null) {
-            // Produto identificado, exibe nome do produto
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Produto identificado: ${fproduto['nome']}')),
-            );
-          } else {
-            // Produto não encontrado ou nome indisponível
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Produto não encontrado ou nome indisponível')),
-            );
-          }
-        } else {
-          // Nenhum produto foi encontrado com o código de barras fornecido
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Nenhum produto encontrado para o código de barras escaneado')),
-          );
-        }
-      }
-    } catch (e) {
-      print("Erro ao escanear o código de barras: $e");
-    }
-  } else {
-    print("Permissão da câmera negada.");
-  }
-}
-  }
-
   void __addToCart(Map<String, dynamic> produto) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -136,6 +55,43 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     );
   }
 
+  //Leitura do código de barras
+
+  void _onBarcodeDetected(BarcodeCapture capture) async {
+    if (!isScanning || capture.barcodes.isEmpty) return;
+
+    final code = capture.barcodes.first.rawValue;
+    if (code == null) return;
+
+    setState(() {
+      isScanning = false; //Pause o scanner para evitar múltiplas leituras 
+    });
+
+    FirebaseFirestore.instance
+      .collection('produto')
+      .where('codigoBarras', isEqualTo: code)
+      .get()
+      .then((QuerySnapshot snapshot) {
+        if (snapshot.docs.isNotEmpty){
+          final produto = snapshot.docs[0].data() as Map<String, dynamic>;
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TelaDetalhes(produto: produto),
+              ),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content:  Text('Produto não encontrado')),
+          );
+        }
+
+        setState(() {
+          isScanning = true;
+        });
+      });
+  }
+
   @override
   Widget build(BuildContext context) {
   return Scaffold(
@@ -144,7 +100,17 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       centerTitle: true,
       backgroundColor: const Color.fromARGB(255, 55, 117, 199),
     ),
-    body: Column(
+    body: 
+    
+    Stack(
+      children: [
+        MobileScanner(
+          controller: scannerController,
+          fit: BoxFit.cover,
+          onDetect: _onBarcodeDetected,
+        ),
+
+    Column(
       children: [
         Expanded(
           child: ListView.builder(
@@ -257,6 +223,9 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         ),
       ],
     ),
-  );
+    //Colocar código do leitor aqui para sobrepor a tela em caso de testes
+      ]
+  ));
+
 }  
 }
