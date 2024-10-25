@@ -104,6 +104,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     
     Stack(
       children: [
+        //Colocar código do leitor aqui para ficar em segundo plano
         MobileScanner(
           controller: scannerController,
           fit: BoxFit.cover,
@@ -224,8 +225,9 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       ],
     ),
     //Colocar código do leitor aqui para sobrepor a tela em caso de testes
+    
       ]
-  ));
-
+    )
+  );
 }  
 }
