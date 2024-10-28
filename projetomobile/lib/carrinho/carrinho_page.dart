@@ -283,10 +283,18 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         ),
       ],
     ),
-    //Colocar código do leitor aqui para sobrepor a tela em caso de testes
-    
-      ]
-    )
-  );
-}  
+    // Botão para iniciar o reconhecimento de voz, sobreposto no canto inferior direito
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: FloatingActionButton(
+              onPressed: _isListening ? _stopListening : _startListening,
+              backgroundColor: Colors.red,
+              child: Icon(_isListening ? Icons.mic : Icons.mic_none),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
