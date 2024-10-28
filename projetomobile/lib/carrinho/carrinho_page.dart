@@ -4,6 +4,8 @@ import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
 
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+
 
 class CarrinhoPage extends StatefulWidget {
   const CarrinhoPage({super.key});
@@ -17,9 +19,15 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   MobileScannerController scannerController = MobileScannerController();
   bool isScanning = true;
 
+  // Instância de reconhecimento de voz
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _commandText = '';
+
   @override
   void initState() {
     super.initState();
+    _speech = stt.SpeechToText();
     _fetchProdutos();
     scannerController.start();
   }
@@ -91,6 +99,48 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         });
       });
   }
+
+  // Função para iniciar o reconhecimento de voz
+  void _startListening() async {
+    bool available = await _speech.initialize(
+      onStatus: (val) => setState(() => _isListening = _speech.isListening),
+      onError: (val) => print('Erro: $val'),
+    );
+    if (available) {
+      setState(() => _isListening = true);
+      _speech.listen(onResult: (val) {
+        setState(() {
+          _commandText = val.recognizedWords;
+          _processVoiceCommand(_commandText);
+        });
+      });
+    }
+  }
+
+  // Processa o comando de voz e verifica o produto
+  void _processVoiceCommand(String command) {
+    command = command.toLowerCase();
+    final produto = produtos.firstWhere(
+      (produto) => command.contains(produto['nome'].toLowerCase()),
+      orElse: () => {},
+    );
+    if (produto.isNotEmpty) {
+      __addToCart(produto);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Produto não encontrado no catálogo')),
+      );
+    }
+    _stopListening();
+  }
+
+  void _stopListening() {
+    setState(() {
+      _isListening = false;
+    });
+    _speech.stop();
+  }
+
 
   @override
   Widget build(BuildContext context) {
