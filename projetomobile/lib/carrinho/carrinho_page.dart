@@ -103,15 +103,21 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   }
 
   // Função para iniciar o reconhecimento de voz
-  void _initializeSpeechRecognition() async {
+   void _initializeSpeechRecognition() async {
     bool available = await _speech.initialize(
-      onStatus: (val) => setState(() => _isListening = _speech.isListening),
+      onStatus: (val) {
+        if (val == "done") {
+          _startListening();
+        }
+      },
       onError: (val) => print('Erro: $val'),
     );
     if (!available) {
       setState(() {
         _commandText = 'Reconhecimento de voz não disponível no dispositivo';
       });
+    } else {
+      _startListening();
     }
   }
 
@@ -120,11 +126,14 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     if (!_isListening) {
       setState(() => _isListening = true);
       await _speech.listen(
-        onResult: (val) => setState(() {
-          _commandText = val.recognizedWords;
-        }),
+        onResult: (val) {
+          setState(() {
+            _commandText = val.recognizedWords;
+          });
+          _processVoiceCommand(_commandText);
+        },
+        listenMode: stt.ListenMode.dictation,
       );
-      _processVoiceCommand(_commandText);
     }
   }
 
@@ -174,7 +183,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         const SnackBar(content: Text('Comando não reconhecido')),
       );
     }
-    _stopListening();
   }
 
   void _stopListening() {
