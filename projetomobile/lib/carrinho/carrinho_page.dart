@@ -28,6 +28,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   void initState() {
     super.initState();
     _speech = stt.SpeechToText();
+    _initializeSpeechRecognition();
     _fetchProdutos();
     scannerController.start();
   }
@@ -101,19 +102,27 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   }
 
   // Função para iniciar o reconhecimento de voz
-  void _startListening() async {
+  void _initializeSpeechRecognition() async {
     bool available = await _speech.initialize(
       onStatus: (val) => setState(() => _isListening = _speech.isListening),
       onError: (val) => print('Erro: $val'),
     );
-    if (available) {
-      setState(() => _isListening = true);
-      _speech.listen(onResult: (val) {
-        setState(() {
-          _commandText = val.recognizedWords;
-          _processVoiceCommand(_commandText);
-        });
+    if (!available) {
+      setState(() {
+        _commandText = 'Reconhecimento de voz não disponível no dispositivo';
       });
+    }
+  }
+
+  // Função para iniciar a escuta de voz
+  void _startListening() async {
+    if (!_isListening) {
+      setState(() => _isListening = true);
+      await _speech.listen(
+        onResult: (val) => setState(() {
+          _commandText = val.recognizedWords; // Atualiza o texto com a transcrição
+        }),
+      );
     }
   }
 
