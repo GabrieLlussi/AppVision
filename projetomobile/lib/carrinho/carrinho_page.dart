@@ -121,19 +121,29 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       setState(() => _isListening = true);
       await _speech.listen(
         onResult: (val) => setState(() {
-          _commandText = val.recognizedWords; // Atualiza o texto com a transcrição
-          _processVoiceCommand(_commandText);
+          _commandText = val.recognizedWords;
         }),
       );
+      _processVoiceCommand(_commandText);
     }
   }
 
   // Processa o comando de voz e verifica o produto
   void _processVoiceCommand(String command) {
     command = command.toLowerCase();
-    if (command.contains('adicionar')) {
+
+    if (command.contains("finalizar")) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Carrinho()),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Finalizando compra...')),
+      );
+    } else if (command.contains("adicionar")) {
+      final produtoNome = command.replaceAll("adicionar", "").trim();
       final produto = produtos.firstWhere(
-        (produto) => command.contains(produto['nome'].toLowerCase()),
+        (produto) => produtoNome.contains(produto['nome'].toLowerCase()),
         orElse: () => {},
       );
       if (produto.isNotEmpty) {
@@ -143,33 +153,36 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
           const SnackBar(content: Text('Produto não encontrado no catálogo')),
         );
       }
-    } else if (command.contains('detalhes')) {
+    } else if (command.contains("detalhes")) {
+      final produtoNome = command.replaceAll("detalhes", "").trim();
       final produto = produtos.firstWhere(
-        (produto) => command.contains(produto['nome'].toLowerCase()),
+        (produto) => produtoNome.contains(produto['nome'].toLowerCase()),
         orElse: () => {},
       );
       if (produto.isNotEmpty) {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => TelaDetalhes(produto: produto),
-          ),
+          MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produto não encontrado no catálogo')),
         );
       }
-    } else if (command.contains('carrinho') || command.contains('finalizar')) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Carrinho()),
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comando não reconhecido')),
       );
     }
     _stopListening();
   }
 
   void _stopListening() {
+    _speech.stop();
     setState(() {
       _isListening = false;
     });
-    _speech.stop();
+    Future.delayed(Duration(milliseconds: 500), () => _startListening());
   }
 
 
