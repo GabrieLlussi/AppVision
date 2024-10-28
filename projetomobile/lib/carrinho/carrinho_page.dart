@@ -31,6 +31,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     _initializeSpeechRecognition();
     _fetchProdutos();
     scannerController.start();
+    _startListening();
   }
 
   void _fetchProdutos() async {
@@ -121,6 +122,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       await _speech.listen(
         onResult: (val) => setState(() {
           _commandText = val.recognizedWords; // Atualiza o texto com a transcrição
+          _processVoiceCommand(_commandText);
         }),
       );
     }
@@ -129,15 +131,35 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   // Processa o comando de voz e verifica o produto
   void _processVoiceCommand(String command) {
     command = command.toLowerCase();
-    final produto = produtos.firstWhere(
-      (produto) => command.contains(produto['nome'].toLowerCase()),
-      orElse: () => {},
-    );
-    if (produto.isNotEmpty) {
-      __addToCart(produto);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Produto não encontrado no catálogo')),
+    if (command.contains('adicionar')) {
+      final produto = produtos.firstWhere(
+        (produto) => command.contains(produto['nome'].toLowerCase()),
+        orElse: () => {},
+      );
+      if (produto.isNotEmpty) {
+        __addToCart(produto);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produto não encontrado no catálogo')),
+        );
+      }
+    } else if (command.contains('detalhes')) {
+      final produto = produtos.firstWhere(
+        (produto) => command.contains(produto['nome'].toLowerCase()),
+        orElse: () => {},
+      );
+      if (produto.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TelaDetalhes(produto: produto),
+          ),
+        );
+      }
+    } else if (command.contains('carrinho') || command.contains('finalizar')) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Carrinho()),
       );
     }
     _stopListening();
@@ -283,16 +305,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         ),
       ],
     ),
-    // Botão para iniciar o reconhecimento de voz, sobreposto no canto inferior direito
-          Positioned(
-            bottom: 20,
-            right: 20,
-            child: FloatingActionButton(
-              onPressed: _isListening ? _stopListening : _startListening,
-              backgroundColor: Colors.red,
-              child: Icon(_isListening ? Icons.mic : Icons.mic_none),
-            ),
-          ),
         ],
       ),
     );
