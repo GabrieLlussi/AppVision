@@ -1,10 +1,12 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'produtos/produto_page.dart';
 import 'package:projetomobile/produtos/tela_lista_produtos.dart'; // Importe a TelaListaProdutos para edição e exclusão de produtos
-//import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'package:projetomobile/mercado/cadastro_mercado.dart';
+import 'package:projetomobile/gps/proximidade_estabelecimentos.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -38,6 +40,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final ProximidadeEstabelecimento proximidadeEstabelecimento = ProximidadeEstabelecimento();
+  Timer? _proximidadeTimer;
+
+  @override
+  void initState(){
+    super.initState();
+
+    _proximidadeTimer = Timer.periodic(Duration(seconds: 10), (timer){
+      proximidadeEstabelecimento.verificarProximidade(context);
+    });
+  }
+
+  @override
+  void dispose() {
+    _proximidadeTimer?.cancel(); //Cancela o timer quando sair da tela
+    super.dispose();
+  }
+
   Future<void> _reloadData() async {
     setState(() {
 
