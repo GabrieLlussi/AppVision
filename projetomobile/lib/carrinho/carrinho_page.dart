@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
-
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
@@ -210,6 +209,12 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
           fit: BoxFit.cover,
           onDetect: _onBarcodeDetected,
         ),
+
+    Container(
+      color: Colors.white,
+      width: double.infinity,
+      height: double.infinity,
+    ),
 
     Column(
       children: [

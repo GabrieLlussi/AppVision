@@ -2,113 +2,187 @@ import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
-class TelaDetalhes extends StatelessWidget {
-  final Map<String, dynamic> produto; // ou outro tipo dependendo de como seu produto está definido
+class TelaDetalhes extends StatefulWidget {
+  final Map<String, dynamic> produto;
 
-  TelaDetalhes({super.key, required this.produto});
+  TelaDetalhes({Key? key, required this.produto}) : super(key: key);
 
-  void _addToCart(BuildContext context, Map<String, dynamic> produto) async {
+  @override
+  _TelaDetalhesState createState() => _TelaDetalhesState();
+}
+
+class _TelaDetalhesState extends State<TelaDetalhes> {
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _commandText = '';
+  final FlutterTts _flutterTts = FlutterTts();
+
+  @override
+  void initState() {
+    super.initState();
+    _speech = stt.SpeechToText();
+  }
+
+  void _addToCart(BuildContext context) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    await firestore.collection('carrinho').add(produto);
+    // Adiciona o produto atual ao carrinho
+    await firestore.collection('carrinho').add(widget.produto);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${produto['nome']} adicionado ao carrinho'))
+      SnackBar(content: Text('${widget.produto['nome']} adicionado ao carrinho')),
     );
   }
 
-    final FlutterTts _flutterTts = FlutterTts();
-
-    Future<void> _falarDescricao(String texto) async {
+  Future<void> _falarDescricao(String texto) async {
     await _flutterTts.speak(texto);
   }
-  
-@override
+
+  void _initializeSpeechRecognition() async {
+    bool available = await _speech.initialize(
+      onStatus: (val) {
+        if (val == "done") {
+          _startListening();
+        }
+      },
+      onError: (val) => print('Erro: $val'),
+    );
+    if (!available) {
+      setState(() {
+        _commandText = 'Reconhecimento de voz não disponível no dispositivo';
+      });
+    } else {
+      _startListening();
+    }
+  }
+
+  void _startListening() async {
+    if (!_isListening) {
+      setState(() => _isListening = true);
+      await _speech.listen(
+        onResult: (val) {
+          setState(() {
+            _commandText = val.recognizedWords;
+          });
+          _processVoiceCommand(_commandText);
+        },
+        listenMode: stt.ListenMode.dictation,
+      );
+    }
+  }
+
+  void _processVoiceCommand(String command) {
+  command = command.toLowerCase();
+
+  if (command.contains("carrinho")) {
+    // Navegar para a página do carrinho
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => Carrinho()),
+    );
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Indo para o carrinho...')),
+    );
+    _stopListening();
+  } else if (command.contains("adicione ao carrinho")) {
+    // Chama a função de adicionar ao carrinho
+    _addToCart(context);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Produto adicionado ao carrinho.')),
+    );
+    _stopListening();
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Comando não reconhecido')),
+    );
+  }
+}
+
+  void _stopListening() {
+    _speech.stop();
+    setState(() {
+      _isListening = false;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-  // Obter o tamanho preferido da fonte do usuário
-  double preferredFontSize = MediaQuery.of(context).textScaleFactor;
+    double preferredFontSize = MediaQuery.of(context).textScaleFactor;
 
-
-  return Scaffold(
-    appBar: AppBar(
-      title: Text(
-        produto['nome'],
-        style: TextStyle(fontSize: 24.0 * preferredFontSize),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          widget.produto['nome'],
+          style: TextStyle(fontSize: 24.0 * preferredFontSize),
+        ),
+        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
-      backgroundColor: const Color.fromARGB(255, 55, 117, 199),
-    ),
-    body: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Imagem grande do produto
-          SizedBox(
-            height: 400, // Altura maior para a imagem
-            width: double.infinity, // Largura total da tela
-            child: Image.network(
-              produto['imgProduto'],
-              fit: BoxFit.cover, // Preencher o container
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 400,
+              width: double.infinity,
+              child: Image.network(
+                widget.produto['imgProduto'],
+                fit: BoxFit.cover,
+              ),
             ),
-          ),
-          const SizedBox(height: 20),
-          // Exibir o nome do produto com maior destaque
-          Text(
-            '${produto['nome']}',
-            style: TextStyle(
-              fontSize: 34 * preferredFontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.black87, // Maior contraste
+            const SizedBox(height: 20),
+            Text(
+              '${widget.produto['nome']}',
+              style: TextStyle(
+                fontSize: 34 * preferredFontSize,
+                fontWeight: FontWeight.bold,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          // Maior destaque para o preço
-          Text(
-            'R\$${produto['preco']}',
-            style: TextStyle(
-              fontSize: 26 * preferredFontSize,
-              fontWeight: FontWeight.bold,
-              color: const Color.fromRGBO(0, 131, 22, 1), // Maior contraste
+            const SizedBox(height: 10),
+            Text(
+              'R\$${widget.produto['preco']}',
+              style: TextStyle(
+                fontSize: 26 * preferredFontSize,
+                fontWeight: FontWeight.bold,
+                color: const Color.fromRGBO(0, 131, 22, 1),
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '${produto['peso']}g',
-            style: TextStyle(
-              fontSize: 22 * preferredFontSize,
-              color: Colors.black87,
+            const SizedBox(height: 10),
+            Text(
+              '${widget.produto['peso']}g',
+              style: TextStyle(
+                fontSize: 22 * preferredFontSize,
+                color: Colors.black87,
+              ),
             ),
-          ),
-          const SizedBox(height: 10),
-          
-          GestureDetector(
-              onTap: () => _falarDescricao(produto['descricao'] ?? 'Descrição não disponível'),
-                child: Container(
-                  padding: const EdgeInsets.all(8.0),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Colors.black54, width: 2.0),
-                    borderRadius: BorderRadius.circular(6.0),
-                  ),
-                  child: Text('${produto['descricao']}',
+            const SizedBox(height: 10),
+            GestureDetector(
+              onTap: () => _falarDescricao(widget.produto['descricao'] ?? 'Descrição não disponível'),
+              child: Container(
+                padding: const EdgeInsets.all(8.0),
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.black54, width: 2.0),
+                  borderRadius: BorderRadius.circular(6.0),
+                ),
+                child: Text(
+                  '${widget.produto['descricao']}',
                   style: TextStyle(
-              fontSize: 22 * preferredFontSize,
-              color: Colors.black87,
+                    fontSize: 22 * preferredFontSize,
+                    color: Colors.black87,
+                  ),
                 ),
               ),
             ),
-          ),
-          const SizedBox(height: 20),
-          Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Adicionar Semantics aos botões
-              Semantics(
-                label: 'Adicionar ao carrinho',
-                child: ElevatedButton.icon(
+            const SizedBox(height: 20),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                ElevatedButton.icon(
                   onPressed: () {
-                    _addToCart(context, produto);
-                    // Fornecer feedback auditivo
+                    _addToCart(context);
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('Produto adicionado ao carrinho.'),
@@ -126,11 +200,8 @@ class TelaDetalhes extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
                   ),
                 ),
-              ),
-              const SizedBox(width: 20),
-              Semantics(
-                label: 'Ir para o carrinho de compras',
-                child: ElevatedButton.icon(
+                const SizedBox(width: 20),
+                ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
                       context,
@@ -148,14 +219,11 @@ class TelaDetalhes extends StatelessWidget {
                     padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
-    ),
-  );
+    );
+  }
 }
-}
-
-
