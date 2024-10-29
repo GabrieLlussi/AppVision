@@ -136,7 +136,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     }
   }
 
-  // Processa o comando de voz e verifica o produto
   void _processVoiceCommand(String command) {
     command = command.toLowerCase();
 
