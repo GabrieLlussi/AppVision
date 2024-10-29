@@ -4,6 +4,8 @@ import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
 
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+
 
 class CarrinhoPage extends StatefulWidget {
   const CarrinhoPage({super.key});
@@ -17,9 +19,16 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   MobileScannerController scannerController = MobileScannerController();
   bool isScanning = true;
 
+  // Instância de reconhecimento de voz
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
+  String _commandText = '';
+
   @override
   void initState() {
     super.initState();
+    _speech = stt.SpeechToText();
+    _initializeSpeechRecognition();
     _fetchProdutos();
     scannerController.start();
   }
@@ -91,6 +100,98 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         });
       });
   }
+
+  // Função para iniciar o reconhecimento de voz
+   void _initializeSpeechRecognition() async {
+    bool available = await _speech.initialize(
+      onStatus: (val) {
+        if (val == "done") {
+          _startListening();
+        }
+      },
+      onError: (val) => print('Erro: $val'),
+    );
+    if (!available) {
+      setState(() {
+        _commandText = 'Reconhecimento de voz não disponível no dispositivo';
+      });
+    } else {
+      _startListening();
+    }
+  }
+
+  // Função para iniciar a escuta de voz
+  void _startListening() async {
+    if (!_isListening) {
+      setState(() => _isListening = true);
+      await _speech.listen(
+        onResult: (val) {
+          setState(() {
+            _commandText = val.recognizedWords;
+          });
+          _processVoiceCommand(_commandText);
+        },
+        listenMode: stt.ListenMode.dictation,
+      );
+    }
+  }
+
+  // Processa o comando de voz e verifica o produto
+  void _processVoiceCommand(String command) {
+    command = command.toLowerCase();
+
+    if (command.contains("finalizar")) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Carrinho()),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Finalizando compra...')),
+      );
+      _stopListening();
+    } else if (command.contains("adicionar")) {
+      final produtoNome = command.replaceAll("adicionar", "").trim();
+      final produto = produtos.firstWhere(
+        (produto) => produtoNome.contains(produto['nome'].toLowerCase()),
+        orElse: () => {},
+      );
+      if (produto.isNotEmpty) {
+        __addToCart(produto);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produto não encontrado no catálogo')),
+        );
+      }
+    } else if (command.contains("detalhes")) {
+      final produtoNome = command.replaceAll("detalhes", "").trim();
+      final produto = produtos.firstWhere(
+        (produto) => produtoNome.contains(produto['nome'].toLowerCase()),
+        orElse: () => {},
+      );
+      if (produto.isNotEmpty) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produto não encontrado no catálogo')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comando não reconhecido')),
+      );
+    }
+  }
+
+  void _stopListening() {
+    _speech.stop();
+    setState(() {
+      _isListening = false;
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -224,10 +325,8 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         ),
       ],
     ),
-    //Colocar código do leitor aqui para sobrepor a tela em caso de testes
-    
-      ]
-    )
-  );
-}  
+        ],
+      ),
+    );
+  }
 }
