@@ -6,6 +6,24 @@ class ProximidadeEstabelecimento {
   final double distanciaMinimaMetros = 20.0;
 
   Future<void> verificarProximidade(BuildContext context) async {
+    //Solicita permissão da localização para o usuário
+    LocationPermission permission = await Geolocator.checkPermission();
+
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Permissão de localização negada')),
+        );
+        return;
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Permissão de localização permanentemente bloqueada pelo usuário')),
+      );
+    }
     // Obtem a posição atual do usuário
     Position posicaoAtual = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
 
