@@ -31,7 +31,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     _initializeSpeechRecognition();
     _fetchProdutos();
     scannerController.start();
-    _startListening();
   }
 
   void _fetchProdutos() async {
@@ -149,6 +148,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Finalizando compra...')),
       );
+      _stopListening();
     } else if (command.contains("adicionar")) {
       final produtoNome = command.replaceAll("adicionar", "").trim();
       final produto = produtos.firstWhere(
@@ -190,7 +190,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     setState(() {
       _isListening = false;
     });
-    Future.delayed(Duration(milliseconds: 500), () => _startListening());
   }
 
 
