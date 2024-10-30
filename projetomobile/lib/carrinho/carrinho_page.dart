@@ -16,20 +16,18 @@ class CarrinhoPage extends StatefulWidget {
 class _CarrinhoPageState extends State<CarrinhoPage> {
   List<Map<String, dynamic>> produtos = [];
   MobileScannerController scannerController = MobileScannerController();
+  stt.SpeechToText speech = stt.SpeechToText();
   bool isScanning = true;
+  bool isListening = false;
+  String lastCommand = ''; // Armazena o último comando para execução de ações
 
-  // Instância de reconhecimento de voz
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
-  String _commandText = '';
 
   @override
   void initState() {
     super.initState();
-    _speech = stt.SpeechToText();
-    _initializeSpeechRecognition();
     _fetchProdutos();
     scannerController.start();
+    _initSpeech();
   }
 
   void _fetchProdutos() async {
@@ -100,95 +98,80 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       });
   }
 
-  // Função para iniciar o reconhecimento de voz
-   void _initializeSpeechRecognition() async {
-    bool available = await _speech.initialize(
-      onStatus: (val) {
-        if (val == "done") {
-          _startListening();
-        }
-      },
-      onError: (val) => print('Erro: $val'),
+
+ void _initSpeech() async {
+    bool hasSpeech = await speech.initialize(
+      onStatus: (status) => _onSpeechStatus(status),
+      onError: (error) => print('Error: $error'),
     );
-    if (!available) {
-      setState(() {
-        _commandText = 'Reconhecimento de voz não disponível no dispositivo';
-      });
-    } else {
-      _startListening();
+
+    if (hasSpeech) {
+      _listen(); // Inicia a escuta contínua
     }
   }
 
-  // Função para iniciar a escuta de voz
-  void _startListening() async {
-    if (!_isListening) {
-      setState(() => _isListening = true);
-      await _speech.listen(
-        onResult: (val) {
-          setState(() {
-            _commandText = val.recognizedWords;
-          });
-          _processVoiceCommand(_commandText);
-        },
+  void _listen() async {
+    if (!isListening) {
+      setState(() => isListening = true);
+      await speech.listen(
+        onResult: (result) => _onSpeechResult(result.recognizedWords),
         listenMode: stt.ListenMode.dictation,
+        partialResults: false,
+        pauseFor: const Duration(seconds: 3),
+        cancelOnError: false,
       );
     }
   }
 
-  void _processVoiceCommand(String command) {
-    command = command.toLowerCase();
+  void _onSpeechResult(String command) {
+    setState(() => lastCommand = command.toLowerCase().trim());
+    _executeCommand(lastCommand);
+  }
 
-    if (command.contains("finalizar")) {
+  void _onSpeechStatus(String status) {
+    if (status == "notListening" && mounted) {
+      setState(() => isListening = false);
+      _listen(); // Reinicia a escuta ao parar
+    }
+  }
+
+  void _executeCommand(String command) {
+    // Verificar o comando e executar a ação correspondente
+    if (command.contains('adicionar')) {
+      // Verifica qual produto adicionar
+      if (produtos.isNotEmpty) {
+        __addToCart(produtos.first); // Exemplo: adiciona o primeiro produto
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Produto adicionado ao carrinho')),
+      );
+    } else if (command.contains('detalhes')) {
+      // Abre a tela de detalhes do primeiro produto da lista, por exemplo
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => TelaDetalhes(produto: produtos.first),
+        ),
+      );
+    } else if (command.contains('finalizar')) {
+      // Abre a tela de finalização
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Carrinho()),
       );
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Finalizando compra...')),
-      );
-      _stopListening();
-    } else if (command.contains("adicionar")) {
-      final produtoNome = command.replaceAll("adicionar", "").trim();
-      final produto = produtos.firstWhere(
-        (produto) => produtoNome.contains(produto['nome'].toLowerCase()),
-        orElse: () => {},
-      );
-      if (produto.isNotEmpty) {
-        __addToCart(produto);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Produto não encontrado no catálogo')),
-        );
-      }
-    } else if (command.contains("detalhes")) {
-      final produtoNome = command.replaceAll("detalhes", "").trim();
-      final produto = produtos.firstWhere(
-        (produto) => produtoNome.contains(produto['nome'].toLowerCase()),
-        orElse: () => {},
-      );
-      if (produto.isNotEmpty) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Produto não encontrado no catálogo')),
-        );
-      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Comando não reconhecido')),
+        SnackBar(content: Text('Comando não reconhecido')),
       );
     }
   }
 
-  void _stopListening() {
-    _speech.stop();
-    setState(() {
-      _isListening = false;
-    });
-  }
+  void _confirmAction(String message) {
+  ScaffoldMessenger.of(context).showSnackBar(
+    SnackBar(content: Text(message)),
+  );
+}
+
 
 
   @override
