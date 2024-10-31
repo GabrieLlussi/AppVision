@@ -175,145 +175,134 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
 
 
   @override
-  Widget build(BuildContext context) {
+Widget build(BuildContext context) {
   return Scaffold(
     appBar: AppBar(
-      title: const Text('Catálogo de produtos'),
+      title: const Text('Catálogo de Produtos', style: TextStyle(fontSize: 28)),
       centerTitle: true,
-      backgroundColor: const Color.fromARGB(255, 55, 117, 199),
+      backgroundColor: Colors.black,
     ),
-    body: 
-    
-    Stack(
+    body: Stack(
       children: [
-        //Colocar código do leitor aqui para ficar em segundo plano
         MobileScanner(
           controller: scannerController,
           fit: BoxFit.cover,
           onDetect: _onBarcodeDetected,
         ),
-
-    Container(
-      color: Colors.white,
-      width: double.infinity,
-      height: double.infinity,
-    ),
-
-    Column(
-      children: [
-        Expanded(
-          child: ListView.builder(
-            itemCount: produtos.length,
-            itemBuilder: (context, index) {
-              final produto = produtos[index];
-              return Card(
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 15),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      ClipRRect(
-                        borderRadius: BorderRadius.circular(10.0),
-                        child: Container(
-                          width: 100, // Aumentando o tamanho da imagem aqui
-                          height: 150,
-                          color: Colors.grey[200],
-                          child: produto['imgProduto'] != null &&
-                                  produto['imgProduto'].isNotEmpty
-                              ? Image.network(
-                                  produto['imgProduto'],
-                                  fit: BoxFit.contain,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons.image,
-                                        size: 100, color: Colors.grey);
-                                  },
-                                )
-                              : const Icon(Icons.image, size: 100, color: Colors.grey),
-                        ),
-                      ),
-                      const SizedBox(width: 16.0), // Espaço entre a imagem e o texto
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              produto['nome'],
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 24.0,
-                                color: Colors.teal[800],
-                              ),
-                            ),
-                            const SizedBox(height: 8.0),
-                            Text(
-                              'Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}\n'
-                              'Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g',
-                              style: const TextStyle(
-                                fontSize: 16.0,
-                                color: Color.fromARGB(255, 3, 3, 3),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
+        Container(
+          color: Colors.white,
+          width: double.infinity,
+          height: double.infinity,
+        ),
+        Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: produtos.length,
+                itemBuilder: (context, index) {
+                  final produto = produtos[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12.0),
+                    ),
+                    elevation: 5,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          IconButton(
-                            icon: const Icon(Icons.add_shopping_cart_outlined,
-                                color: Colors.red, size: 40),
-                            onPressed: () => __addToCart(produto),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: Container(
+                              width: 120,
+                              height: 180,
+                              color: Colors.grey[200],
+                              child: produto['imgProduto'] != null && produto['imgProduto'].isNotEmpty
+                                  ? Image.network(
+                                      produto['imgProduto'],
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Icon(Icons.image, size: 100, color: Colors.grey);
+                                      },
+                                    )
+                                  : const Icon(Icons.image, size: 100, color: Colors.grey),
+                            ),
                           ),
-                          IconButton(
-                            icon: const Icon(Icons.info, color: Colors.blue, size: 45),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      TelaDetalhes(produto: produto),
+                          const SizedBox(width: 20.0),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  produto['nome'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 28.0,
+                                    color: Colors.teal[900],
+                                  ),
                                 ),
-                              );
-                            },
+                                const SizedBox(height: 12.0),
+                                Text(
+                                  'Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}\n'
+                                  'Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g',
+                                  style: const TextStyle(fontSize: 20.0, color: Colors.black),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.add_shopping_cart, color: Colors.yellow, size: 50),
+                                onPressed: () => __addToCart(produto),
+                                tooltip: 'Adicionar ao carrinho',
+                              ),
+                              IconButton(
+                                icon: const Icon(Icons.info, color: Colors.blue, size: 50),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TelaDetalhes(produto: produto),
+                                    ),
+                                  );
+                                },
+                                tooltip: 'Mais informações',
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => Carrinho()),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.yellow,
+                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                 ),
-              );
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.all(15.0),
-          child: ElevatedButton(
-            onPressed: () {
-              // Lógica para finalizar a compra
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => Carrinho()),
-              );
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color.fromARGB(255, 255, 0, 0),
-              padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+                child: const Text(
+                  'Carrinho',
+                  style: TextStyle(fontSize: 28, color: Colors.black),
+                ),
+              ),
             ),
-            child: const Text(
-              'Carrinho',
-              style: TextStyle(fontSize: 25, color: Colors.black),
-            ),
-          ),
+          ],
         ),
       ],
     ),
-        ],
-      ),
-    );
-  }
+  );
+}
 }
