@@ -3,7 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:speech_to_text/speech_to_text.dart';
 
 
 class CarrinhoPage extends StatefulWidget {
@@ -16,19 +16,103 @@ class CarrinhoPage extends StatefulWidget {
 class _CarrinhoPageState extends State<CarrinhoPage> {
   List<Map<String, dynamic>> produtos = [];
   MobileScannerController scannerController = MobileScannerController();
-  stt.SpeechToText speech = stt.SpeechToText();
+  SpeechToText _speechToText = SpeechToText();
+  bool _isListening = true;
   bool isScanning = true;
-  bool isListening = false;
-  String lastCommand = ''; // Armazena o último comando para execução de ações
 
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos();
-    scannerController.start();
     _initSpeech();
+    scannerController.start();
   }
+
+  Future<void> _initSpeech() async {
+    bool available = await _speechToText.initialize(
+      onStatus: (status) {
+        if (status == "done") {
+          _startListening();  // Reinicia a escuta contínua quando o reconhecimento é concluído
+        }
+      },
+      onError: (error) => print("Erro de reconhecimento: $error"),
+    );
+    if (available) {
+      _startListening();
+    }
+  }
+
+  void _startListening() {
+    _speechToText.listen(
+      onResult: (result) {
+        if (result.finalResult) {
+          _processCommand(result.recognizedWords);
+        }
+      },
+      listenMode: ListenMode.dictation,
+    );
+    setState(() {
+      _isListening = true;
+    });
+  }
+
+
+  void _processCommand(String command) {
+    command = command.toLowerCase();
+    if (command.contains("adicionar ao carrinho")) {
+      String? produtoNome = _extractProductName(command, "adicionar ao carrinho");
+      if (produtoNome != null) {
+        _addProductToCartByName(produtoNome);
+      }
+    } else if (command.contains("detalhes")) {
+      String? produtoNome = _extractProductName(command, "detalhes");
+      if (produtoNome != null) {
+        _showProductDetails(produtoNome);
+      }
+    } else if (command.contains("finalizar")) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Carrinho()),
+      );
+    }
+  }
+
+  String? _extractProductName(String command, String action) {
+    return command.replaceAll(action, "").trim();  // Extrai o nome do produto após o comando
+  }
+
+  void _addProductToCartByName(String nomeProduto) {
+    final produto = produtos.firstWhere(
+      (produto) => produto['nome'].toLowerCase() == nomeProduto.toLowerCase(),
+      orElse: () => {},
+    );
+    if (produto != null) {
+      __addToCart(produto);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Produto $nomeProduto não encontrado")),
+      );
+    }
+  }
+
+  void _showProductDetails(String nomeProduto) {
+    final produto = produtos.firstWhere(
+      (produto) => produto['nome'].toLowerCase() == nomeProduto.toLowerCase(),
+      orElse: () => {},
+    );
+    if (produto != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Produto $nomeProduto não encontrado")),
+      );
+    }
+  }
+
 
   void _fetchProdutos() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -97,81 +181,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         });
       });
   }
-
-
- void _initSpeech() async {
-    bool hasSpeech = await speech.initialize(
-      onStatus: (status) => _onSpeechStatus(status),
-      onError: (error) => print('Error: $error'),
-    );
-
-    if (hasSpeech) {
-      _listen(); // Inicia a escuta contínua
-    }
-  }
-
-  void _listen() async {
-    if (!isListening) {
-      setState(() => isListening = true);
-      await speech.listen(
-        onResult: (result) => _onSpeechResult(result.recognizedWords),
-        listenMode: stt.ListenMode.dictation,
-        partialResults: false,
-        pauseFor: const Duration(seconds: 3),
-        cancelOnError: false,
-      );
-    }
-  }
-
-  void _onSpeechResult(String command) {
-    setState(() => lastCommand = command.toLowerCase().trim());
-    _executeCommand(lastCommand);
-  }
-
-  void _onSpeechStatus(String status) {
-    if (status == "notListening" && mounted) {
-      setState(() => isListening = false);
-      _listen(); // Reinicia a escuta ao parar
-    }
-  }
-
-  void _executeCommand(String command) {
-    // Verificar o comando e executar a ação correspondente
-    if (command.contains('adicionar')) {
-      // Verifica qual produto adicionar
-      if (produtos.isNotEmpty) {
-        __addToCart(produtos.first); // Exemplo: adiciona o primeiro produto
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Produto adicionado ao carrinho')),
-      );
-    } else if (command.contains('detalhes')) {
-      // Abre a tela de detalhes do primeiro produto da lista, por exemplo
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => TelaDetalhes(produto: produtos.first),
-        ),
-      );
-    } else if (command.contains('finalizar')) {
-      // Abre a tela de finalização
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Carrinho()),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Comando não reconhecido')),
-      );
-    }
-  }
-
-  void _confirmAction(String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(message)),
-  );
-}
-
 
 
   @override
