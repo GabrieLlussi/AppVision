@@ -5,7 +5,6 @@ import 'package:projetomobile/carrinho/tela_detalhes.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
-
 class CarrinhoPage extends StatefulWidget {
   const CarrinhoPage({super.key});
 
@@ -20,7 +19,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   bool _isListening = true;
   bool isScanning = true;
 
-
   @override
   void initState() {
     super.initState();
@@ -33,7 +31,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     bool available = await _speechToText.initialize(
       onStatus: (status) {
         if (status == "done") {
-          _startListening();  // Reinicia a escuta contínua quando o reconhecimento é concluído
+          _startListening(); // Reinicia a escuta contínua quando o reconhecimento é concluído
         }
       },
       onError: (error) => print("Erro de reconhecimento: $error"),
@@ -57,16 +55,16 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     });
   }
 
-
   void _processCommand(String command) {
     command = command.toLowerCase();
     if (command.contains("adicionar ao carrinho")) {
-      String? produtoNome = _extractProductName(command, "adicionar ao carrinho");
+      String? produtoNome =
+          _extractProductName(command);
       if (produtoNome != null) {
         _addProductToCartByName(produtoNome);
       }
     } else if (command.contains("detalhes")) {
-      String? produtoNome = _extractProductName(command, "detalhes");
+      String? produtoNome = _extractProductName(command);
       if (produtoNome != null) {
         _showProductDetails(produtoNome);
       }
@@ -78,8 +76,11 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     }
   }
 
-  String? _extractProductName(String command, String action) {
-    return command.replaceAll(action, "").trim();  // Extrai o nome do produto após o comando
+  String? _extractProductName(String command) {
+    // Remova "adicionar ao carrinho" para tentar isolar o nome do produto
+    String nomeProduto =
+        command.replaceFirst("adicionar ao carrinho", "").trim();
+    return nomeProduto; // Extrai o nome do produto após o comando
   }
 
   void _addProductToCartByName(String nomeProduto) {
@@ -112,7 +113,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       );
     }
   }
-
 
   void _fetchProdutos() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -154,164 +154,174 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     if (code == null) return;
 
     setState(() {
-      isScanning = false; //Pause o scanner para evitar múltiplas leituras 
+      isScanning = false; //Pause o scanner para evitar múltiplas leituras
     });
 
     FirebaseFirestore.instance
-      .collection('produto')
-      .where('codigoBarras', isEqualTo: code)
-      .get()
-      .then((QuerySnapshot snapshot) {
-        if (snapshot.docs.isNotEmpty){
-          final produto = snapshot.docs[0].data() as Map<String, dynamic>;
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => TelaDetalhes(produto: produto),
-              ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content:  Text('Produto não encontrado')),
-          );
-        }
+        .collection('produto')
+        .where('codigoBarras', isEqualTo: code)
+        .get()
+        .then((QuerySnapshot snapshot) {
+      if (snapshot.docs.isNotEmpty) {
+        final produto = snapshot.docs[0].data() as Map<String, dynamic>;
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TelaDetalhes(produto: produto),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Produto não encontrado')),
+        );
+      }
 
-        setState(() {
-          isScanning = true;
-        });
+      setState(() {
+        isScanning = true;
       });
+    });
   }
 
-
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    appBar: AppBar(
-      title: const Text('Catálogo de Produtos', style: TextStyle(fontSize: 28)),
-      centerTitle: true,
-      backgroundColor: Colors.black,
-    ),
-    body: Stack(
-      children: [
-        MobileScanner(
-          controller: scannerController,
-          fit: BoxFit.cover,
-          onDetect: _onBarcodeDetected,
-        ),
-        Container(
-          color: Colors.white,
-          width: double.infinity,
-          height: double.infinity,
-        ),
-        Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: produtos.length,
-                itemBuilder: (context, index) {
-                  final produto = produtos[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12.0),
-                    ),
-                    elevation: 5,
-                    child: Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12.0),
-                            child: Container(
-                              width: 120,
-                              height: 180,
-                              color: Colors.grey[200],
-                              child: produto['imgProduto'] != null && produto['imgProduto'].isNotEmpty
-                                  ? Image.network(
-                                      produto['imgProduto'],
-                                      fit: BoxFit.contain,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return const Icon(Icons.image, size: 100, color: Colors.grey);
-                                      },
-                                    )
-                                  : const Icon(Icons.image, size: 100, color: Colors.grey),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title:
+            const Text('Catálogo de Produtos', style: TextStyle(fontSize: 28)),
+        centerTitle: true,
+        backgroundColor: Colors.black,
+      ),
+      body: Stack(
+        children: [
+          MobileScanner(
+            controller: scannerController,
+            fit: BoxFit.cover,
+            onDetect: _onBarcodeDetected,
+          ),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            height: double.infinity,
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: ListView.builder(
+                  itemCount: produtos.length,
+                  itemBuilder: (context, index) {
+                    final produto = produtos[index];
+                    return Card(
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 10.0, horizontal: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12.0),
+                      ),
+                      elevation: 5,
+                      child: Padding(
+                        padding: const EdgeInsets.all(20.0),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(12.0),
+                              child: Container(
+                                width: 120,
+                                height: 180,
+                                color: Colors.grey[200],
+                                child: produto['imgProduto'] != null &&
+                                        produto['imgProduto'].isNotEmpty
+                                    ? Image.network(
+                                        produto['imgProduto'],
+                                        fit: BoxFit.contain,
+                                        errorBuilder:
+                                            (context, error, stackTrace) {
+                                          return const Icon(Icons.image,
+                                              size: 100, color: Colors.grey);
+                                        },
+                                      )
+                                    : const Icon(Icons.image,
+                                        size: 100, color: Colors.grey),
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 20.0),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  produto['nome'],
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 28.0,
-                                    color: Colors.teal[900],
+                            const SizedBox(width: 20.0),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    produto['nome'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 28.0,
+                                      color: Colors.teal[900],
+                                    ),
                                   ),
+                                  const SizedBox(height: 12.0),
+                                  Text(
+                                    'Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}\n'
+                                    'Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g',
+                                    style: const TextStyle(
+                                        fontSize: 20.0, color: Colors.black),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.add_shopping_cart,
+                                      color: Colors.yellow, size: 50),
+                                  onPressed: () => __addToCart(produto),
+                                  tooltip: 'Adicionar ao carrinho',
                                 ),
-                                const SizedBox(height: 12.0),
-                                Text(
-                                  'Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}\n'
-                                  'Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g',
-                                  style: const TextStyle(fontSize: 20.0, color: Colors.black),
+                                IconButton(
+                                  icon: const Icon(Icons.info,
+                                      color: Colors.blue, size: 50),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            TelaDetalhes(produto: produto),
+                                      ),
+                                    );
+                                  },
+                                  tooltip: 'Mais informações',
                                 ),
                               ],
                             ),
-                          ),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.add_shopping_cart, color: Colors.yellow, size: 50),
-                                onPressed: () => __addToCart(produto),
-                                tooltip: 'Adicionar ao carrinho',
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.info, color: Colors.blue, size: 50),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => TelaDetalhes(produto: produto),
-                                    ),
-                                  );
-                                },
-                                tooltip: 'Mais informações',
-                              ),
-                            ],
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                    ),
-                  );
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => Carrinho()),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.yellow,
-                  padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
-                ),
-                child: const Text(
-                  'Carrinho',
-                  style: TextStyle(fontSize: 28, color: Colors.black),
+                    );
+                  },
                 ),
               ),
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-}
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Carrinho()),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.yellow,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 15),
+                  ),
+                  child: const Text(
+                    'Carrinho',
+                    style: TextStyle(fontSize: 28, color: Colors.black),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }
