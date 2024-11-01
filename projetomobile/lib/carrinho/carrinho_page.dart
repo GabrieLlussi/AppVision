@@ -57,17 +57,18 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
 
   void _processCommand(String command) {
     command = command.toLowerCase();
-    if (command.contains("adicionar ao carrinho")) {
+
+    if (command.startsWith("adicionar")) {
+      // Extrai o nome do produto após a palavra "adicionar"
       String? produtoNome =
-          _extractProductName(command);
-      if (produtoNome != null) {
-        _addProductToCartByName(produtoNome);
-      }
-    } else if (command.contains("detalhes")) {
-      String? produtoNome = _extractProductName(command);
-      if (produtoNome != null) {
-        _showProductDetails(produtoNome);
-      }
+          command.replaceFirst("adicionar", "").trim();
+      _addProductToCartByName(produtoNome);
+      
+    } else if (command.startsWith("detalhes")) {
+      // Extrai o nome do produto após a palavra "detalhes"
+      String? produtoNome = command.replaceFirst("detalhes", "").trim();
+      _showProductDetails(produtoNome);
+      
     } else if (command.contains("finalizar")) {
       Navigator.push(
         context,
@@ -76,12 +77,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     }
   }
 
-  String? _extractProductName(String command) {
-    // Remova "adicionar ao carrinho" para tentar isolar o nome do produto
-    String nomeProduto =
-        command.replaceFirst("adicionar ao carrinho", "").trim();
-    return nomeProduto; // Extrai o nome do produto após o comando
-  }
 
   void _addProductToCartByName(String nomeProduto) {
     final produto = produtos.firstWhere(
