@@ -16,7 +16,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   List<Map<String, dynamic>> produtos = [];
   MobileScannerController scannerController = MobileScannerController();
   SpeechToText _speechToText = SpeechToText();
-  bool _isListening = true;
+  bool _isListening = false;
   bool isScanning = true;
 
   @override
