@@ -60,13 +60,13 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
 
     if (command.startsWith("adicionar")) {
       // Extrai o nome do produto após a palavra "adicionar"
-      String? produtoNome =
+      String produtoNome =
           command.replaceFirst("adicionar", "").trim();
       _addProductToCartByName(produtoNome);
       
     } else if (command.startsWith("detalhes")) {
       // Extrai o nome do produto após a palavra "detalhes"
-      String? produtoNome = command.replaceFirst("detalhes", "").trim();
+      String produtoNome = command.replaceFirst("detalhes", "").trim();
       _showProductDetails(produtoNome);
       
     } else if (command.contains("finalizar")) {
@@ -79,11 +79,11 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
 
 
   void _addProductToCartByName(String nomeProduto) {
-    final produto = produtos.firstWhere(
+    final produtoEncontrados = produtos.where(
       (produto) => produto['nome'].toLowerCase() == nomeProduto.toLowerCase(),
-      orElse: () => {},
     );
-    if (produto != null) {
+    if (produtoEncontrados.isNotEmpty) {
+      final produto = produtoEncontrados.first;
       __addToCart(produto);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -93,11 +93,11 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   }
 
   void _showProductDetails(String nomeProduto) {
-    final produto = produtos.firstWhere(
+    final produtosEncontrados = produtos.where(
       (produto) => produto['nome'].toLowerCase() == nomeProduto.toLowerCase(),
-      orElse: () => {},
     );
-    if (produto != null) {
+    if (produtosEncontrados.isNotEmpty) {
+      final produto = produtosEncontrados.first;
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
