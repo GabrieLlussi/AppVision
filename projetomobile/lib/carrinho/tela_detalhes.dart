@@ -32,7 +32,8 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     await firestore.collection('carrinho').add(widget.produto);
 
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${widget.produto['nome']} adicionado ao carrinho')),
+      SnackBar(
+          content: Text('${widget.produto['nome']} adicionado ao carrinho')),
     );
   }
 
@@ -74,31 +75,31 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
   }
 
   void _processVoiceCommand(String command) {
-  command = command.toLowerCase();
+    command = command.toLowerCase();
 
-  if (command.contains("carrinho")) {
-    // Navegar para a página do carrinho
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => Carrinho()),
-    );
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Indo para o carrinho...')),
-    );
-    _stopListening();
-  } else if (command.contains("adicione ao carrinho")) {
-    // Chama a função de adicionar ao carrinho
-    _addToCart(context);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Produto adicionado ao carrinho.')),
-    );
-    _stopListening();
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Comando não reconhecido')),
-    );
+    if (command.contains("carrinho")) {
+      // Navegar para a página do carrinho
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Carrinho()),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Indo para o carrinho...')),
+      );
+      _stopListening();
+    } else if (command.contains("adicione ao carrinho")) {
+      // Chama a função de adicionar ao carrinho
+      _addToCart(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Produto adicionado ao carrinho.')),
+      );
+      _stopListening();
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comando não reconhecido')),
+      );
+    }
   }
-}
 
   void _stopListening() {
     _speech.stop();
@@ -115,7 +116,8 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
       appBar: AppBar(
         title: Text(
           widget.produto['nome'],
-          style: TextStyle(fontSize: 24.0 * preferredFontSize),
+          style: TextStyle(
+              fontSize: 30.0 * preferredFontSize, color: Colors.black),
         ),
         backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
@@ -124,61 +126,66 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(
-              height: 400,
-              width: double.infinity,
-              child: Image.network(
-                widget.produto['imgProduto'],
-                fit: BoxFit.cover,
+            // Aumentar o tamanho da imagem e adicionar o gesto de toque
+            GestureDetector(
+              onTap: () => _falarDescricao(
+                  widget.produto['descricao'] ?? 'Descrição não disponível'),
+              child: SizedBox(
+                height: 350,
+                width: double.infinity,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.network(
+                    widget.produto['imgProduto'],
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Center(
+                        child: Icon(
+                          Icons.image,
+                          size: 100,
+                          color: Colors.grey,
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 20),
             Text(
               '${widget.produto['nome']}',
               style: TextStyle(
-                fontSize: 34 * preferredFontSize,
+                fontSize: 44 * preferredFontSize,
                 fontWeight: FontWeight.bold,
                 color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'R\$${widget.produto['preco']}',
-              style: TextStyle(
-                fontSize: 26 * preferredFontSize,
-                fontWeight: FontWeight.bold,
-                color: const Color.fromRGBO(0, 131, 22, 1),
-              ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              '${widget.produto['peso']}g',
-              style: TextStyle(
-                fontSize: 22 * preferredFontSize,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 10),
-            GestureDetector(
-              onTap: () => _falarDescricao(widget.produto['descricao'] ?? 'Descrição não disponível'),
-              child: Container(
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  border: Border.all(color: Colors.black54, width: 2.0),
-                  borderRadius: BorderRadius.circular(6.0),
-                ),
-                child: Text(
-                  '${widget.produto['descricao']}',
-                  style: TextStyle(
-                    fontSize: 22 * preferredFontSize,
-                    color: Colors.black87,
-                  ),
-                ),
               ),
             ),
             const SizedBox(height: 20),
             Row(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment
+                  .spaceBetween, // Distribui o espaço entre os filhos
+              children: [
+                Text(
+                  'R\$${widget.produto['preco']}',
+                  style: TextStyle(
+                    fontSize: 35 * preferredFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: const Color.fromRGBO(0, 131, 22, 1),
+                  ),
+                ),
+                Text(
+                  '${widget.produto['peso']}g',
+                  style: TextStyle(
+                    fontSize: 35 * preferredFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.amber,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            // Usar uma Column para os botões
+            Column(
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
@@ -192,15 +199,15 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                   icon: Icon(Icons.add, size: 30 * preferredFontSize),
                   label: Text(
                     'Adicionar',
-                    style: TextStyle(fontSize: 22.0 * preferredFontSize),
+                    style: TextStyle(fontSize: 30.0 * preferredFontSize),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lime,
+                    backgroundColor: Colors.green,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+                    minimumSize: const Size(370, 80),
                   ),
                 ),
-                const SizedBox(width: 20),
+                const SizedBox(height: 20),
                 ElevatedButton.icon(
                   onPressed: () {
                     Navigator.push(
@@ -210,13 +217,13 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                   },
                   icon: Icon(Icons.shopping_cart, size: 30 * preferredFontSize),
                   label: Text(
-                    'Carrinho',
-                    style: TextStyle(fontSize: 22.0 * preferredFontSize),
+                    'Ver carrinho',
+                    style: TextStyle(fontSize: 30.0 * preferredFontSize),
                   ),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 12.0, horizontal: 20.0),
+                    minimumSize: const Size(370, 80),
                   ),
                 ),
               ],

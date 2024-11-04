@@ -4,6 +4,7 @@ import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 class CarrinhoPage extends StatefulWidget {
   const CarrinhoPage({super.key});
@@ -15,99 +16,16 @@ class CarrinhoPage extends StatefulWidget {
 class _CarrinhoPageState extends State<CarrinhoPage> {
   List<Map<String, dynamic>> produtos = [];
   MobileScannerController scannerController = MobileScannerController();
-  SpeechToText _speechToText = SpeechToText();
-  bool _isListening = false;
+  FlutterTts flutterTts = FlutterTts();
   bool isScanning = true;
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos();
-    _initSpeech();
     scannerController.start();
   }
 
-  Future<void> _initSpeech() async {
-    bool available = await _speechToText.initialize(
-      onStatus: (status) {
-        if (status == "done") {
-          _startListening(); // Reinicia a escuta contínua quando o reconhecimento é concluído
-        }
-      },
-      onError: (error) => print("Erro de reconhecimento: $error"),
-    );
-    if (available) {
-      _startListening();
-    }
-  }
-
-  void _startListening() {
-    _speechToText.listen(
-      onResult: (result) {
-        if (result.finalResult) {
-          _processCommand(result.recognizedWords);
-        }
-      },
-      listenMode: ListenMode.dictation,
-    );
-    setState(() {
-      _isListening = true;
-    });
-  }
-
-  void _processCommand(String command) {
-    command = command.toLowerCase();
-
-    if (command.startsWith("adicionar")) {
-      // Extrai o nome do produto após a palavra "adicionar"
-      String produtoNome =
-          command.replaceFirst("adicionar", "").trim();
-      _addProductToCartByName(produtoNome);
-      
-    } else if (command.startsWith("detalhes")) {
-      // Extrai o nome do produto após a palavra "detalhes"
-      String produtoNome = command.replaceFirst("detalhes", "").trim();
-      _showProductDetails(produtoNome);
-      
-    } else if (command.contains("finalizar")) {
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => Carrinho()),
-      );
-    }
-  }
-
-
-  void _addProductToCartByName(String nomeProduto) {
-    final produtoEncontrados = produtos.where(
-      (produto) => produto['nome'].toLowerCase() == nomeProduto.toLowerCase(),
-    );
-    if (produtoEncontrados.isNotEmpty) {
-      final produto = produtoEncontrados.first;
-      __addToCart(produto);
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Produto $nomeProduto não encontrado")),
-      );
-    }
-  }
-
-  void _showProductDetails(String nomeProduto) {
-    final produtosEncontrados = produtos.where(
-      (produto) => produto['nome'].toLowerCase() == nomeProduto.toLowerCase(),
-    );
-    if (produtosEncontrados.isNotEmpty) {
-      final produto = produtosEncontrados.first;
-      Navigator.push(
-        context,
-        MaterialPageRoute(builder: (context) => TelaDetalhes(produto: produto)),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Produto $nomeProduto não encontrado")),
-      );
-    }
-  }
 
   void _fetchProdutos() async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
@@ -138,6 +56,10 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${produto['nome']} adicionado ao carrinho')),
     );
+  }
+
+  Future<void> _speakProductName(String productName) async {
+    await flutterTts.speak(productName);
   }
 
   //Leitura do código de barras
@@ -181,10 +103,12 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            const Text('Catálogo de Produtos', style: TextStyle(fontSize: 28)),
+        title: const Text(
+          'Catálogo de Produtos',
+          style: TextStyle(fontSize: 28),
+        ),
         centerTitle: true,
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
       body: Stack(
         children: [
@@ -198,124 +122,104 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
             width: double.infinity,
             height: double.infinity,
           ),
-          Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
+          produtos.isEmpty
+              ? Center(child: CircularProgressIndicator())
+              : PageView.builder(
                   itemCount: produtos.length,
                   itemBuilder: (context, index) {
                     final produto = produtos[index];
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 10.0, horizontal: 15),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                      ),
-                      elevation: 5,
-                      child: Padding(
-                        padding: const EdgeInsets.all(20.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          GestureDetector(
+                            onTap: () => _speakProductName(produto['nome']),
+                            child: ClipRRect(
                               borderRadius: BorderRadius.circular(12.0),
-                              child: Container(
-                                width: 120,
-                                height: 180,
-                                color: Colors.grey[200],
-                                child: produto['imgProduto'] != null &&
-                                        produto['imgProduto'].isNotEmpty
-                                    ? Image.network(
-                                        produto['imgProduto'],
-                                        fit: BoxFit.contain,
-                                        errorBuilder:
-                                            (context, error, stackTrace) {
-                                          return const Icon(Icons.image,
-                                              size: 100, color: Colors.grey);
-                                        },
-                                      )
-                                    : const Icon(Icons.image,
-                                        size: 100, color: Colors.grey),
-                              ),
+                              child: produto['imgProduto'] != null &&
+                                      produto['imgProduto'].isNotEmpty
+                                  ? Image.network(
+                                      produto['imgProduto'],
+                                      fit: BoxFit.cover, 
+                                      height: 350, // Tamanho aumentado da imagem
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Icon(
+                                          Icons.image,
+                                          size: 250,
+                                          color: Colors.grey,
+                                        );
+                                      },
+                                    )
+                                  : const Icon(Icons.image, size: 250, color: Colors.grey),
                             ),
-                            const SizedBox(width: 20.0),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    produto['nome'],
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 28.0,
-                                      color: Colors.teal[900],
+                          ),
+                          const SizedBox(height: 10.0),
+                          Text(
+                            produto['nome'],
+                            style: const TextStyle(
+                              fontSize: 44.0,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 0, 0, 0),
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 20.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => TelaDetalhes(produto: produto),
                                     ),
-                                  ),
-                                  const SizedBox(height: 12.0),
-                                  Text(
-                                    'Preço: R\$ ${double.parse(produto['preco']).toStringAsFixed(2)}\n'
-                                    'Peso: ${double.parse(produto['peso']).toStringAsFixed(2)} g',
-                                    style: const TextStyle(
-                                        fontSize: 20.0, color: Colors.black),
-                                  ),
-                                ],
+                                  );
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  minimumSize: const Size(350, 80), // Botão grande
+                                ),
+                                child: const Text(
+                                  'Detalhes',
+                                  style: TextStyle(fontSize: 30, color: Colors.black87),
+                                ),
                               ),
+                            ],
+                          ),
+                          const SizedBox(height: 20.0), // Espaço entre os botões
+                          ElevatedButton(
+                            onPressed: () => __addToCart(produto),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.green,
+                              minimumSize: const Size(350, 80), // Botão grande
                             ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.add_shopping_cart,
-                                      color: Colors.yellow, size: 50),
-                                  onPressed: () => __addToCart(produto),
-                                  tooltip: 'Adicionar ao carrinho',
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.info,
-                                      color: Colors.blue, size: 50),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) =>
-                                            TelaDetalhes(produto: produto),
-                                      ),
-                                    );
-                                  },
-                                  tooltip: 'Mais informações',
-                                ),
-                              ],
+                            child: const Text(
+                              'Adicionar',
+                              style: TextStyle(fontSize: 30, color: Colors.black87),
                             ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     );
                   },
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Carrinho()),
-                    );
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15),
-                  ),
-                  child: const Text(
-                    'Carrinho',
-                    style: TextStyle(fontSize: 28, color: Colors.black),
-                  ),
-                ),
-              ),
-            ],
-          ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => Carrinho()),
+          );
+        },
+        backgroundColor: Colors.yellow,
+        child: const Icon(
+          Icons.shopping_cart,
+          color: Colors.black,
+          size: 40,
+        ),
       ),
     );
   }
