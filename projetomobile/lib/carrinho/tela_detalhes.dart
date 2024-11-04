@@ -62,12 +62,14 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
   void _startListening() async {
     if (!_isListening) {
       setState(() => _isListening = true);
+      print("Iniciando o reconhecimento de voz...");
       await _speech.listen(
         onResult: (val) {
           setState(() {
             _commandText = val.recognizedWords;
+            print("Texto reconhecido: $_commandText");
+            _processVoiceCommand(_commandText);
           });
-          _processVoiceCommand(_commandText);
         },
         listenMode: stt.ListenMode.dictation,
       );
