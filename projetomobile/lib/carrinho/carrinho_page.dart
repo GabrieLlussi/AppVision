@@ -18,12 +18,23 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   MobileScannerController scannerController = MobileScannerController();
   FlutterTts flutterTts = FlutterTts();
   bool isScanning = true;
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos();
     scannerController.start();
+    initSpeech();
+    
+  }
+
+  void initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {
+      
+    });
   }
 
 
