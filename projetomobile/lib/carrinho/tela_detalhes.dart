@@ -93,7 +93,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     } else if (comand.contains("adicione")) {
       _addToCart(context);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Produto adicionar ao carrinho')),
+          const SnackBar(content: Text('Produto adicionado ao carrinho')),
         );
         _stopListening();
     }
