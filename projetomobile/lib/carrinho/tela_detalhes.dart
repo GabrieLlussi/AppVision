@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
-import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:speech_to_text/speech_to_text.dart';
 
 class TelaDetalhes extends StatefulWidget {
   final Map<String, dynamic> produto;
@@ -14,15 +15,15 @@ class TelaDetalhes extends StatefulWidget {
 }
 
 class _TelaDetalhesState extends State<TelaDetalhes> {
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
-  String _commandText = '';
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _wordsSpoken = "";
   final FlutterTts _flutterTts = FlutterTts();
 
   @override
   void initState() {
     super.initState();
-    _speech = stt.SpeechToText();
+    initSpeech();
   }
 
   void _addToCart(BuildContext context) async {
@@ -37,77 +38,65 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     );
   }
 
+  //Leitura da descrição
   Future<void> _falarDescricao(String texto) async {
     await _flutterTts.speak(texto);
   }
 
-  void _initializeSpeechRecognition() async {
-    bool available = await _speech.initialize(
-      onStatus: (val) {
-        if (val == "done") {
-          _startListening();
-        }
-      },
-      onError: (val) => print('Erro: $val'),
-    );
-    if (!available) {
-      setState(() {
-        _commandText = 'Reconhecimento de voz não disponível no dispositivo';
-      });
-    } else {
-      _startListening();
+  //Solicitar permissão do microfone
+  void _requestMicrophonePermission() async {
+    var status = await Permission.microphone.request();
+      if (status != PermissionStatus.granted) {
+        print("Permissão para uso do microfone negada.");
     }
+  }
+
+  //Lógica de reconhecimento de voz
+  void initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {
+      
+    });
   }
 
   void _startListening() async {
-    if (!_isListening) {
-      setState(() => _isListening = true);
-      print("Iniciando o reconhecimento de voz...");
-      await _speech.listen(
-        onResult: (val) {
-          setState(() {
-            _commandText = val.recognizedWords;
-            print("Texto reconhecido: $_commandText");
-            _processVoiceCommand(_commandText);
-          });
-        },
-        listenMode: stt.ListenMode.dictation,
-      );
-    }
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {
+    });
   }
 
-  void _processVoiceCommand(String command) {
-    command = command.toLowerCase();
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {
+      
+    });
+  }
 
-    if (command.contains("carrinho")) {
-      // Navegar para a página do carrinho
+  void _onSpeechResult (result) {
+    setState(() {
+      _wordsSpoken = result.recognizedWords.toLowerCase();
+    });
+
+    _processVoiceComand(_wordsSpoken);
+  }
+
+  void _processVoiceComand(String comand) {
+    if (comand.contains("carrinho")) {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => Carrinho()),
       );
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Indo para o carrinho...')),
+        const SnackBar(content: Text('Acessando carrinho')),
       );
       _stopListening();
-    } else if (command.contains("adicione ao carrinho")) {
-      // Chama a função de adicionar ao carrinho
+    } else if (comand.contains("adicione")) {
       _addToCart(context);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Produto adicionado ao carrinho.')),
-      );
-      _stopListening();
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Comando não reconhecido')),
-      );
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Produto adicionar ao carrinho')),
+        );
+        _stopListening();
     }
-  }
-
-  void _stopListening() {
-    _speech.stop();
-    setState(() {
-      _isListening = false;
-    });
   }
 
   @override
@@ -223,7 +212,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                     style: TextStyle(fontSize: 30.0 * preferredFontSize),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.red,
+                    backgroundColor: Colors.yellow,
                     foregroundColor: Colors.white,
                     minimumSize: const Size(370, 80),
                   ),
@@ -233,6 +222,15 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
           ],
         ),
       ),
+      floatingActionButton: FloatingActionButton(
+                  onPressed:  _speechToText.isListening ? _stopListening : _startListening, 
+                  tooltip: 'Listen',
+                  child: Icon (
+                    _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+                    color: Colors.white,
+                  ),
+                  backgroundColor: Colors.red,
+                )
     );
   }
 }
