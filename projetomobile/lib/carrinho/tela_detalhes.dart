@@ -90,11 +90,9 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
         const SnackBar(content: Text('Acessando carrinho')),
       );
       _stopListening();
-    } else if (comand.contains("adicione")) {
+    } else if (comand.contains("adicionar")) {
       _addToCart(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Produto adicionado ao carrinho')),
-        );
+        
         _stopListening();
     }
   }
@@ -112,125 +110,148 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
         ),
         backgroundColor: const Color.fromARGB(255, 55, 117, 199),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Aumentar o tamanho da imagem e adicionar o gesto de toque
-            GestureDetector(
-              onTap: () => _falarDescricao(
-                  widget.produto['descricao'] ?? 'Descrição não disponível'),
-              child: SizedBox(
-                height: 350,
-                width: double.infinity,
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Image.network(
-                    widget.produto['imgProduto'],
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      return const Center(
-                        child: Icon(
-                          Icons.image,
-                          size: 100,
-                          color: Colors.grey,
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              '${widget.produto['nome']}',
-              style: TextStyle(
-                fontSize: 44 * preferredFontSize,
-                fontWeight: FontWeight.bold,
-                color: Colors.black87,
-              ),
-            ),
-            const SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment
-                  .spaceBetween, // Distribui o espaço entre os filhos
+      body: Stack(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'R\$${widget.produto['preco']}',
-                  style: TextStyle(
-                    fontSize: 35 * preferredFontSize,
-                    fontWeight: FontWeight.bold,
-                    color: const Color.fromRGBO(0, 131, 22, 1),
-                  ),
-                ),
-                Text(
-                  '${widget.produto['peso']}g',
-                  style: TextStyle(
-                    fontSize: 35 * preferredFontSize,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.amber,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            // Usar uma Column para os botões
-            Column(
-              children: [
-                ElevatedButton.icon(
-                  onPressed: () {
-                    _addToCart(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Produto adicionado ao carrinho.'),
+                GestureDetector(
+                  onTap: () => _falarDescricao(
+                      widget.produto['descricao'] ?? 'Descrição não disponível'),
+                  child: SizedBox(
+                    height: 350,
+                    width: double.infinity,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.network(
+                        widget.produto['imgProduto'],
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return const Center(
+                            child: Icon(
+                              Icons.image,
+                              size: 100,
+                              color: Colors.grey,
+                            ),
+                          );
+                        },
                       ),
-                    );
-                  },
-                  icon: Icon(Icons.add, size: 30 * preferredFontSize),
-                  label: Text(
-                    'Adicionar',
-                    style: TextStyle(fontSize: 30.0 * preferredFontSize),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(370, 80),
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
-                ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => Carrinho()),
-                    );
-                  },
-                  icon: Icon(Icons.shopping_cart, size: 30 * preferredFontSize),
-                  label: Text(
-                    'Ver carrinho',
-                    style: TextStyle(fontSize: 30.0 * preferredFontSize),
+                Text(
+                  '${widget.produto['nome']}',
+                  style: TextStyle(
+                    fontSize: 44 * preferredFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
                   ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.yellow,
-                    foregroundColor: Colors.white,
-                    minimumSize: const Size(370, 80),
-                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'R\$${widget.produto['preco']}',
+                      style: TextStyle(
+                        fontSize: 35 * preferredFontSize,
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromRGBO(0, 131, 22, 1),
+                      ),
+                    ),
+                    Text(
+                      '${widget.produto['peso']}g',
+                      style: TextStyle(
+                        fontSize: 35 * preferredFontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.amber,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                Column(
+                  children: [
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        _addToCart(context);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Produto adicionado ao carrinho.'),
+                          ),
+                        );
+                      },
+                      icon: Icon(Icons.add, size: 30 * preferredFontSize),
+                      label: Text(
+                        'Adicionar',
+                        style: TextStyle(fontSize: 30.0 * preferredFontSize),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(370, 80),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => Carrinho()),
+                        );
+                      },
+                      icon: Icon(Icons.shopping_cart, size: 30 * preferredFontSize),
+                      label: Text(
+                        'Ver carrinho',
+                        style: TextStyle(fontSize: 30.0 * preferredFontSize),
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.purple,
+                        foregroundColor: Colors.white,
+                        minimumSize: const Size(370, 80),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+          DraggableScrollableSheet(
+            initialChildSize: 0.1,
+            minChildSize: 0.02,
+            maxChildSize: 0.4,
+            builder: (context, scrollController) {
+              return Container(
+                color: Colors.white,
+                padding: const EdgeInsets.all(16),
+                child: ListView(
+                  controller: scrollController,
+                  children: [
+                    const SizedBox(height: 10),
+                    Text(
+                      widget.produto['descricao'] ?? 'Descrição não disponível',
+                      style: TextStyle(fontSize: 40 * preferredFontSize),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
-                  onPressed:  _speechToText.isListening ? _stopListening : _startListening, 
-                  tooltip: 'Listen',
-                  child: Icon (
-                    _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Colors.red,
-                )
+        onPressed: _speechToText.isListening ? _stopListening : _startListening,
+        tooltip: 'Listen',
+        child: Icon(
+          _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.red,
+      ),
     );
   }
 }
