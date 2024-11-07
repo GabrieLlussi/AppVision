@@ -17,15 +17,26 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   MobileScannerController scannerController = MobileScannerController();
   FlutterTts flutterTts = FlutterTts();
   bool isScanning = true;
+<<<<<<< HEAD
+=======
+  final SpeechToText _speechToText = SpeechToText();
+  bool _speechEnabled = false;
+  String _wordsSpoken = "";
+>>>>>>> 302215ddeb4740ec71e0828a17ac6083e4fb0b3e
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos();
     scannerController.start();
+<<<<<<< HEAD
     
   }
 
+=======
+    initSpeech();
+  }
+>>>>>>> 302215ddeb4740ec71e0828a17ac6083e4fb0b3e
 
 
   void _fetchProdutos() async {
@@ -49,7 +60,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     });
   }
 
-  void __addToCart(Map<String, dynamic> produto) async {
+  void _addToCart(Map<String, dynamic> produto) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     await firestore.collection('carrinho').add(produto);
@@ -98,6 +109,49 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         isScanning = true;
       });
     });
+  }
+
+  //Logica para reconhecimento de voz
+  //Lógica de reconhecimento de voz
+  void initSpeech() async {
+    _speechEnabled = await _speechToText.initialize();
+    setState(() {
+      
+    });
+  }
+
+   void _startListening() async {
+    await _speechToText.listen(onResult: _onSpeechResult);
+    setState(() {
+    });
+  }
+
+  void _stopListening() async {
+    await _speechToText.stop();
+    setState(() {
+      
+    });
+  }
+
+  void _onSpeechResult (result) {
+    setState(() {
+      _wordsSpoken = result.recognizedWords.toLowerCase();
+    });
+
+    _processVoiceComand(_wordsSpoken);
+  }
+
+  void _processVoiceComand(String comand) {
+    if (comand.contains("carrinho")) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => Carrinho()),
+      );
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Acessando carrinho')),
+      );
+      _stopListening();
+    }
   }
 
   @override
@@ -191,7 +245,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
                           ),
                           const SizedBox(height: 20.0), // Espaço entre os botões
                           ElevatedButton(
-                            onPressed: () => __addToCart(produto),
+                            onPressed: () => _addToCart(produto),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.green,
                               minimumSize: const Size(350, 80), // Botão grande
@@ -222,6 +276,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
           size: 40,
         ),
       ),
+      
     );
   }
 }
