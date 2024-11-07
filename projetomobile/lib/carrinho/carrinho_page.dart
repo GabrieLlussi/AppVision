@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:speech_to_text/speech_to_text.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 
 class CarrinhoPage extends StatefulWidget {
@@ -18,24 +17,15 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   MobileScannerController scannerController = MobileScannerController();
   FlutterTts flutterTts = FlutterTts();
   bool isScanning = true;
-  final SpeechToText _speechToText = SpeechToText();
-  bool _speechEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos();
     scannerController.start();
-    initSpeech();
     
   }
 
-  void initSpeech() async {
-    _speechEnabled = await _speechToText.initialize();
-    setState(() {
-      
-    });
-  }
 
 
   void _fetchProdutos() async {
@@ -225,7 +215,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
             MaterialPageRoute(builder: (context) => Carrinho()),
           );
         },
-        backgroundColor: Colors.yellow,
+        backgroundColor: Colors.purple,
         child: const Icon(
           Icons.shopping_cart,
           color: Colors.black,

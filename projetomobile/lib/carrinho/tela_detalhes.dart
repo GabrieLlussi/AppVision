@@ -90,7 +90,18 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
         const SnackBar(content: Text('Acessando carrinho')),
       );
       _stopListening();
-    } else if (comand.contains("adicionar")) {
+    }
+    if (comand.contains("detalhes")){
+      String descricaoCompleta =
+      '${widget.produto['nome']}.' 
+      'Preço: R\$${widget.produto['preco']}.'
+      'Peso: ${widget.produto['peso']}gramas.'
+      '${widget.produto['descricao'] ?? 'Descrição não disponível'}.';
+
+      _falarDescricao(descricaoCompleta);
+      _stopListening();
+    }
+     else if (comand.contains("adicionar")) {
       _addToCart(context);
         
         _stopListening();
@@ -243,14 +254,20 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _speechToText.isListening ? _stopListening : _startListening,
-        tooltip: 'Listen',
-        child: Icon(
-          _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
-          color: Colors.white,
+      floatingActionButton: SizedBox(
+        width: 120, // Largura maior
+        height: 120, // Altura maior
+        child: FloatingActionButton(
+          onPressed:
+              _speechToText.isListening ? _stopListening : _startListening,
+          tooltip: 'Listen',
+          child: Icon(
+            _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+            color: Colors.white,
+            size: 70, // Ajuste o tamanho do ícone conforme necessário
+          ),
+          backgroundColor: Colors.transparent,
         ),
-        backgroundColor: Colors.red,
       ),
     );
   }
