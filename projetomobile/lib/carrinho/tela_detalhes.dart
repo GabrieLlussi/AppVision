@@ -223,14 +223,14 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-                  onPressed:  _speechToText.isListening ? _stopListening : _startListening, 
-                  tooltip: 'Listen',
-                  child: Icon (
-                    _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
-                    color: Colors.white,
-                  ),
-                  backgroundColor: Colors.red,
-                )
+        onPressed:  _speechToText.isListening ? _stopListening : _startListening, 
+        tooltip: 'Listen',
+        child: Icon (
+          _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+          color: Colors.white,
+        ),
+        backgroundColor: Colors.red,
+      )
     );
   }
 }
