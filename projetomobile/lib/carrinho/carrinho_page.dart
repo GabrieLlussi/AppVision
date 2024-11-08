@@ -4,6 +4,7 @@ import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:projetomobile/carrinho/tela_detalhes.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:speech_to_text/speech_to_text.dart';
 
 class CarrinhoPage extends StatefulWidget {
   const CarrinhoPage({super.key});
@@ -17,26 +18,19 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   MobileScannerController scannerController = MobileScannerController();
   FlutterTts flutterTts = FlutterTts();
   bool isScanning = true;
-<<<<<<< HEAD
-=======
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _wordsSpoken = "";
->>>>>>> 302215ddeb4740ec71e0828a17ac6083e4fb0b3e
 
   @override
   void initState() {
     super.initState();
     _fetchProdutos();
     scannerController.start();
-<<<<<<< HEAD
+    initSpeech();
     
   }
 
-=======
-    initSpeech();
-  }
->>>>>>> 302215ddeb4740ec71e0828a17ac6083e4fb0b3e
 
 
   void _fetchProdutos() async {

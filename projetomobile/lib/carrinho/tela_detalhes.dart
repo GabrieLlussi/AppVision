@@ -101,6 +101,9 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
       _falarDescricao(descricaoCompleta);
       _stopListening();
     }
+    if (comand.contains("remover")){
+      //void _removeFromCart((produto['id']));
+    }
      else if (comand.contains("adicionar")) {
       _addToCart(context);
         
