@@ -18,8 +18,31 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
   String preco = '';
   String peso = '';
   String descricao = '';
+  String? mercadoSelecionado;
   File ? imgProduto;
   bool isLoading = false;
+
+  //Função para buscar e cadastrar supermercados
+  List<Map<String, String>> mercado = [];
+
+  @override
+   void initState(){
+    super.initState();
+    buscarMercados();
+   }
+
+   Future<void> buscarMercados() async {
+    try {
+      final snapshot = await FirebaseFirestore.instance.collection('mercado').get();
+      final lista = snapshot.docs.map((doc) => {'id' : doc.id, 'nome':doc['nome'].toString()}).toList();
+
+      setState(() {
+        mercado = lista;
+      });
+    } catch (e) {
+      print('Erro ao buscar estabelecimentos: $e');
+    }
+   }
 
   //Função para selecionar imagem
   Future<void> escolherImagem() async {
@@ -54,6 +77,12 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
       );
       return;
     }
+    if (mercadoSelecionado == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor selecione o estabelecimento')),
+      );
+      return;
+    }
 
     setState(() {
       isLoading = true;
@@ -73,6 +102,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
         'peso': peso,
         'descricao' : descricao,
         'imgProduto':urlImagem,
+        'supermercado': mercadoSelecionado,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(
@@ -85,6 +115,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
         peso = '';
         descricao = '';
         imgProduto = null;
+        mercadoSelecionado = null;
         isLoading = false;
       });
       formKey.currentState?.reset();
@@ -104,6 +135,7 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
       preco = '';
       peso = '';
       descricao = '';
+      mercadoSelecionado = null;
     });
     formKey.currentState?.reset();
   }
@@ -223,6 +255,34 @@ class TelaCadastroProdutoState extends State<TelaCadastroProduto> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Por favor, insira a descrição do produto';
+                        }
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 15),
+                    DropdownButtonFormField<String>(
+                      decoration: InputDecoration(
+                        labelText: 'Supermercado',
+                        labelStyle: const TextStyle(color: Colors.teal),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10.0)
+                        ),
+                      ),
+                      value:mercadoSelecionado,
+                      items: mercado
+                        .map((supermercado) => DropdownMenuItem(
+                            value: supermercado['id'],
+                            child: Text(supermercado['nome']!),
+                        ))
+                        .toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          mercadoSelecionado = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null) {
+                          return 'Por favor selecione um estabelecimento';
                         }
                         return null;
                       },
