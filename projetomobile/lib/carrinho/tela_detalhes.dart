@@ -192,12 +192,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        _addToCart(context);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Produto adicionado ao carrinho.'),
-                          ),
-                        );
+                        _addToCart(context); 
                       },
                       icon: Icon(Icons.add, size: 30 * preferredFontSize),
                       label: Text(
