@@ -7,7 +7,9 @@ import 'package:flutter_tts/flutter_tts.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 
 class CarrinhoPage extends StatefulWidget {
-  const CarrinhoPage({super.key});
+  final String supermercadoID;
+
+  const CarrinhoPage({super.key, required this.supermercadoID}); 
 
   @override
   _CarrinhoPageState createState() => _CarrinhoPageState();
@@ -37,7 +39,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     // Busca os produtos da coleção "produtos" no Firestore
-    QuerySnapshot snapshot = await firestore.collection('produto').get();
+    QuerySnapshot snapshot = await firestore.collection('produto').where('supermercado', isEqualTo: widget.supermercadoID).get();
 
     setState(() {
       // Converte os documentos para Map e adiciona à lista de produtos
@@ -49,6 +51,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
           'peso': doc['peso'],
           'descricao': doc['descricao'],
           'imgProduto': doc['imgProduto'],
+          'supermercado': doc['supermercado'],
         };
       }).toList();
     });

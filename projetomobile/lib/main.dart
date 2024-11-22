@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => CarrinhoPage(),
+                          builder: (context) => CarrinhoPage(supermercadoID: mercado.id),
                           )
                       );
                     },
