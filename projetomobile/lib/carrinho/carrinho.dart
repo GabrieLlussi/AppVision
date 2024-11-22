@@ -7,7 +7,9 @@ import 'package:speech_to_text/speech_to_text.dart';
 //import 'package:firebase_core/firebase_core.dart';
 
 class Carrinho extends StatefulWidget {
-  const Carrinho({super.key});
+  final String supermercadoID;
+
+  const Carrinho({super.key, required this.supermercadoID});
 
   @override
   _CarrinhoState createState() => _CarrinhoState();
@@ -79,7 +81,7 @@ class _CarrinhoState extends State<Carrinho> {
   Future<void> _fetchCarrinho() async {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-      QuerySnapshot snapshot = await firestore.collection('carrinho').get();
+      QuerySnapshot snapshot = await firestore.collection('carrinho').where('supermercado', isEqualTo: widget.supermercadoID).get();
       setState(() {
         carrinho = snapshot.docs.map((doc) {
           return {
@@ -87,7 +89,8 @@ class _CarrinhoState extends State<Carrinho> {
             'nome': doc['nome'],
             'preco': doc['preco'],
             'peso': doc['peso'],
-            'imgProduto': doc['imgProduto']
+            'imgProduto': doc['imgProduto'],
+            'supermercado': doc['supermercado'],
           };
         }).toList();
       });
@@ -229,6 +232,6 @@ class _CarrinhoState extends State<Carrinho> {
 }
 
 void main() => runApp(MaterialApp(
-      home: Carrinho(),
+      home: Carrinho(supermercadoID: 'supermercadoID'),
       debugShowCheckedModeBanner: false,
     ));

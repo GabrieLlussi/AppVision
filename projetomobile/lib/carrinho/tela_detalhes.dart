@@ -84,7 +84,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     if (comand.contains("carrinho")) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Carrinho()),
+        MaterialPageRoute(builder: (context) => Carrinho(supermercadoID: 'supermercadoID')),
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Acessando carrinho')),
@@ -210,7 +210,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Carrinho()),
+                          MaterialPageRoute(builder: (context) => Carrinho(supermercadoID: 'supermercadoID')),
                         );
                       },
                       icon: Icon(Icons.shopping_cart, size: 30 * preferredFontSize),

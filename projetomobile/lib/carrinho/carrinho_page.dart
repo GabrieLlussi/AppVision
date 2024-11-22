@@ -60,7 +60,10 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   void _addToCart(Map<String, dynamic> produto) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    await firestore.collection('carrinho').add(produto);
+    await firestore.collection('carrinho').add({
+      ...produto,
+      'supermercado': widget.supermercadoID,
+    });
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('${produto['nome']} adicionado ao carrinho')),
@@ -142,7 +145,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     if (comand.contains("carrinho")) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Carrinho()),
+        MaterialPageRoute(builder: (context) => Carrinho(supermercadoID: widget.supermercadoID)),
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Acessando carrinho')),
@@ -263,7 +266,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => Carrinho()),
+            MaterialPageRoute(builder: (context) => Carrinho(supermercadoID: widget.supermercadoID)),
           );
         },
         backgroundColor: Colors.purple,
