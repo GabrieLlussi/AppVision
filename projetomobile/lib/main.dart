@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:projetomobile/carrinho/carrinho_page.dart';
 import 'produtos/produto_page.dart';
+import 'tutorial/TTSHelper.dart';
 import 'package:projetomobile/produtos/tela_lista_produtos.dart'; // Importe a TelaListaProdutos para edição e exclusão de produtos
 import 'package:projetomobile/mercado/cadastro_mercado.dart';
 import 'package:projetomobile/gps/proximidade_estabelecimentos.dart';
@@ -60,8 +61,15 @@ class _HomePageState extends State<HomePage> {
 
   Future<void> _reloadData() async {
     setState(() {
-
     });
+  }
+
+  //Logica para o tutorial
+  Future<void> _startTutorial() async {
+    TTSHelper.setText(
+      "Tutorial de ajuda: Botão azul vai para a tela de detalhes, Botões roxos levam para a tela de carrinho e o Botão verde adiciona produtos ao carrinho"
+    );
+    await TTSHelper.speak();
   }
 
   @override
@@ -80,6 +88,11 @@ class _HomePageState extends State<HomePage> {
           IconButton(
           onPressed: _reloadData, 
           icon: const Icon(Icons.refresh),
+          ),
+
+          IconButton(
+            onPressed: _startTutorial,
+            icon: const Icon(Icons.help_outline), // Ícone de tutorial
           ),
           Builder(
               builder: (context) {
@@ -188,6 +201,7 @@ class _HomePageState extends State<HomePage> {
       //Tela inicial
       body: Padding(
         padding: const EdgeInsets.all(16.0),
+        
         child: FutureBuilder<QuerySnapshot>(
           future: FirebaseFirestore.instance.collection('mercado').get(),
           builder: (context, snapshot) {
