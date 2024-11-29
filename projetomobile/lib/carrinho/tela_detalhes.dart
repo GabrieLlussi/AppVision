@@ -17,6 +17,7 @@ class TelaDetalhes extends StatefulWidget {
 class _TelaDetalhesState extends State<TelaDetalhes> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
+  bool _isSpeaking = false;
   String _wordsSpoken = "";
   final FlutterTts _flutterTts = FlutterTts();
 
@@ -40,7 +41,20 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
 
   //Leitura da descrição
   Future<void> _falarDescricao(String texto) async {
-    await _flutterTts.speak(texto);
+    if(_isSpeaking)
+    {
+      await _flutterTts.stop();
+      setState(() {
+        _isSpeaking = false;
+      });
+    }
+    else{
+        await _flutterTts.speak(texto);
+        setState(() {
+          _isSpeaking = true;
+        });
+    }
+    
   }
 
   //Solicitar permissão do microfone
