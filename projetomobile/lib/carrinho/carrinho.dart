@@ -61,27 +61,30 @@ class _CarrinhoState extends State<Carrinho> {
     _processVoiceComand(_wordsSpoken);
   }
 
-  void _processVoiceComand(String comand) {
+  void _processVoiceComand(String comand) async {
     if (comand.contains("finalizar")) {
       double total = _calcularTotal();
       _flutterTts.speak(
           "O valor total do carrinho é de R\$ ${total.toStringAsFixed(2)}");
       _stopListening();
-      if (comand.contains("limpe")){
-        //_clearCart();
+    }
+      else if (comand.contains("limpe")) {
+        await _clearCarrinho();
         _flutterTts.speak("Todos os itens foram removidos do carrinho");
         _stopListening();
       }
-    } else if (comand.contains("pare")) {
+     else if (comand.contains("pare")) {
       _stopListening();
     }
   }
 
-
   Future<void> _fetchCarrinho() async {
     try {
       FirebaseFirestore firestore = FirebaseFirestore.instance;
-      QuerySnapshot snapshot = await firestore.collection('carrinho').where('supermercado', isEqualTo: widget.supermercadoID).get();
+      QuerySnapshot snapshot = await firestore
+          .collection('carrinho')
+          .where('supermercado', isEqualTo: widget.supermercadoID)
+          .get();
       setState(() {
         carrinho = snapshot.docs.map((doc) {
           return {
@@ -108,6 +111,29 @@ class _CarrinhoState extends State<Carrinho> {
       });
     } catch (e) {
       print("Erro ao remover produto do carrinho: $e");
+    }
+  }
+
+  // Função para limpar o carrinho
+  Future<void> _clearCarrinho() async {
+    try {
+      FirebaseFirestore firestore = FirebaseFirestore.instance;
+      WriteBatch batch = firestore.batch();
+
+      // Adiciona todas as operações de exclusão ao batch
+      for (var produto in carrinho) {
+        batch.delete(firestore.collection('carrinho').doc(produto['id']));
+      }
+
+      // Executa todas as exclusões de uma vez
+      await batch.commit();
+
+      // Atualiza o estado local do carrinho
+      setState(() {
+        carrinho.clear();
+      });
+    } catch (e) {
+      print("Erro ao limpar carrinho: $e");
     }
   }
 
