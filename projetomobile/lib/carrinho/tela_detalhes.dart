@@ -41,52 +41,44 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
 
   //Leitura da descrição
   Future<void> _falarDescricao(String texto) async {
-    if(_isSpeaking)
-    {
+    if (_isSpeaking) {
       await _flutterTts.stop();
       setState(() {
         _isSpeaking = false;
       });
+    } else {
+      await _flutterTts.speak(texto);
+      setState(() {
+        _isSpeaking = true;
+      });
     }
-    else{
-        await _flutterTts.speak(texto);
-        setState(() {
-          _isSpeaking = true;
-        });
-    }
-    
   }
 
   //Solicitar permissão do microfone
   void _requestMicrophonePermission() async {
     var status = await Permission.microphone.request();
-      if (status != PermissionStatus.granted) {
-        print("Permissão para uso do microfone negada.");
+    if (status != PermissionStatus.granted) {
+      print("Permissão para uso do microfone negada.");
     }
   }
 
   //Lógica de reconhecimento de voz
   void initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
   void _startListening() async {
     await _speechToText.listen(onResult: _onSpeechResult);
-    setState(() {
-    });
+    setState(() {});
   }
 
   void _stopListening() async {
     await _speechToText.stop();
-    setState(() {
-      
-    });
+    setState(() {});
   }
 
-  void _onSpeechResult (result) {
+  void _onSpeechResult(result) {
     setState(() {
       _wordsSpoken = result.recognizedWords.toLowerCase();
     });
@@ -98,30 +90,57 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     if (comand.contains("carrinho")) {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => Carrinho(supermercadoID: 'supermercadoID')),
+        MaterialPageRoute(
+            builder: (context) => Carrinho(supermercadoID: 'supermercadoID')),
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Acessando carrinho')),
       );
       _stopListening();
     }
-    if (comand.contains("detalhes")){
-      String descricaoCompleta =
-      '${widget.produto['nome']}.' 
-      'Preço: R\$${widget.produto['preco']}.'
-      'Peso: ${widget.produto['peso']}gramas.'
-      '${widget.produto['descricao'] ?? 'Descrição não disponível'}.';
+    if (comand.contains("detalhes")) {
+      String descricaoCompleta = '${widget.produto['nome']}.'
+          'Preço: R\$${widget.produto['preco']}.'
+          'Peso: ${widget.produto['peso']}gramas.'
+          '${widget.produto['descricao'] ?? 'Descrição não disponível'}.';
 
       _falarDescricao(descricaoCompleta);
       _stopListening();
     }
-    if (comand.contains("remover")){
-      //void _removeFromCart((produto['id']));
-    }
-     else if (comand.contains("adicionar")) {
+    if (comand.contains("remover")) {
+      _removeFromCart(context);
+      _flutterTts.speak("O item foi removido do carrinho");
+      _stopListening();
+    } else if (comand.contains("adicionar")) {
       _addToCart(context);
-        
-        _stopListening();
+      _flutterTts.speak("O item foi adicionado ao carrinho");
+      _stopListening();
+    }
+  }
+
+  Future<void> _removeFromCart(BuildContext context) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    // Verificar se o produto está no carrinho
+    var carrinhoSnapshot = await firestore
+        .collection('carrinho')
+        .where('id', isEqualTo: widget.produto['id'])
+        .get();
+
+    if (carrinhoSnapshot.docs.isNotEmpty) {
+      // Remove o produto do carrinho
+      for (var doc in carrinhoSnapshot.docs) {
+        await firestore.collection('carrinho').doc(doc.id).delete();
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('${widget.produto['nome']} removido do carrinho')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Produto não está no carrinho')),
+      );
     }
   }
 
@@ -146,8 +165,8 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GestureDetector(
-                  onTap: () => _falarDescricao(
-                      widget.produto['descricao'] ?? 'Descrição não disponível'),
+                  onTap: () => _falarDescricao(widget.produto['descricao'] ??
+                      'Descrição não disponível'),
                   child: SizedBox(
                     height: 350,
                     width: double.infinity,
@@ -206,7 +225,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
-                        _addToCart(context); 
+                        _addToCart(context);
                       },
                       icon: Icon(Icons.add, size: 30 * preferredFontSize),
                       label: Text(
@@ -224,10 +243,13 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => Carrinho(supermercadoID: 'supermercadoID')),
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  Carrinho(supermercadoID: 'supermercadoID')),
                         );
                       },
-                      icon: Icon(Icons.shopping_cart, size: 30 * preferredFontSize),
+                      icon: Icon(Icons.shopping_cart,
+                          size: 30 * preferredFontSize),
                       label: Text(
                         'Ver carrinho',
                         style: TextStyle(fontSize: 30.0 * preferredFontSize),
