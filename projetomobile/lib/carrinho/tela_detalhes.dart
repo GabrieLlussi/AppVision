@@ -192,7 +192,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                 Text(
                   '${widget.produto['nome']}',
                   style: TextStyle(
-                    fontSize: 44 * preferredFontSize,
+                    fontSize: 30 * preferredFontSize,
                     fontWeight: FontWeight.bold,
                     color: Colors.black87,
                   ),
@@ -205,7 +205,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                     Text(
                       'R\$${widget.produto['preco']}',
                       style: TextStyle(
-                        fontSize: 35 * preferredFontSize,
+                        fontSize: 24 * preferredFontSize,
                         fontWeight: FontWeight.bold,
                         color: const Color.fromRGBO(0, 131, 22, 1),
                       ),
@@ -213,7 +213,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                     Text(
                       '${widget.produto['peso']}g',
                       style: TextStyle(
-                        fontSize: 35 * preferredFontSize,
+                        fontSize: 24 * preferredFontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
                       ),
