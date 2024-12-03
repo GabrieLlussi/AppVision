@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_scanner/mobile_scanner.dart'; 
+import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:flutter_tts/flutter_tts.dart'; // Dependência para síntese de voz
 
 class TelaListaProdutos extends StatefulWidget {
   const TelaListaProdutos({super.key});
@@ -15,6 +16,14 @@ class TelaListaProdutos extends StatefulWidget {
 class _TelaListaProdutosState extends State<TelaListaProdutos> {
   File? _novaImagem;
   String? _codigoBarras;
+  final FlutterTts _flutterTts = FlutterTts(); // Instância do sintetizador de voz
+
+  // Função para reproduzir o nome do produto
+  Future<void> _speakProductName(String productName) async {
+    await _flutterTts.setLanguage('pt-BR');
+    await _flutterTts.setPitch(1.0);
+    await _flutterTts.speak('Adicionado ao carrinho: $productName');
+  }
 
   // Função para excluir um produto
   Future<void> excluirProduto(String id) async {
@@ -209,6 +218,19 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                   color: Color.fromARGB(255, 3, 3, 3),
                                 ),
                               ),
+                              const SizedBox(height: 8.0),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _speakProductName(nome); // Fala o nome do produto
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text('$nome adicionado ao carrinho.'),
+                                    ),
+                                  );
+                                },
+                                icon: const Icon(Icons.add_shopping_cart),
+                                label: const Text("Adicionar ao Carrinho"),
+                              ),
                             ],
                           ),
                         ),
@@ -266,28 +288,34 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                             controller: TextEditingController(
                                                 text: descricao),
                                           ),
-                                          const SizedBox(height: 10),
-                                          TextButton(
-                                            onPressed: _selecionarImagem,
-                                            child:
-                                                const Text('Selecionar nova imagem'),
+                                          TextField(
+                                            decoration: const InputDecoration(
+                                                labelText: 'Código de Barras'),
+                                            onChanged: (value) =>
+                                                _codigoBarras = value,
+                                            controller: TextEditingController(
+                                                text: codigoBarras),
                                           ),
-                                          _novaImagem != null
-                                              ? Image.file(
-                                                  _novaImagem!,
-                                                  width: 100,
-                                                  height: 100,
-                                                )
-                                              : Container(),
-                                          TextButton(
+                                          const SizedBox(height: 8),
+                                          ElevatedButton.icon(
                                             onPressed: _escanearCodigoBarras,
-                                            child: const Text(
-                                                'Adicionar código de barras'),
+                                            icon: const Icon(Icons.qr_code),
+                                            label: const Text(
+                                                'Escanear Código de Barras'),
                                           ),
-                                          _codigoBarras != null
-                                              ? Text(
-                                                  'Código de Barras: $_codigoBarras')
-                                              : Container(),
+                                          const SizedBox(height: 8),
+                                          if (_novaImagem != null)
+                                            Image.file(
+                                              _novaImagem!,
+                                              width: 100,
+                                              height: 100,
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ElevatedButton(
+                                            onPressed: _selecionarImagem,
+                                            child: const Text(
+                                                'Selecionar Nova Imagem'),
+                                          ),
                                         ],
                                       ),
                                       actions: [
@@ -300,16 +328,15 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                                           onPressed: () async {
                                             String? novaImagemUrl =
                                                 await _uploadImagem(id);
-                                            if (mounted) {
-                                              editarProduto(
-                                                  id,
-                                                  novoNome,
-                                                  novoPreco,
-                                                  novoPeso,
-                                                  novaDescricao,
-                                                  novaImagemUrl);
-                                              Navigator.of(context).pop();
-                                            }
+                                            editarProduto(
+                                              id,
+                                              novoNome,
+                                              novoPreco,
+                                              novoPeso,
+                                              novaDescricao,
+                                              novaImagemUrl,
+                                            );
+                                            Navigator.of(context).pop();
                                           },
                                           child: const Text('Salvar'),
                                         ),
@@ -322,7 +349,9 @@ class _TelaListaProdutosState extends State<TelaListaProdutos> {
                             IconButton(
                               icon: const Icon(Icons.delete,
                                   color: Colors.red, size: 30),
-                              onPressed: () => excluirProduto(id),
+                              onPressed: () {
+                                excluirProduto(id);
+                              },
                             ),
                           ],
                         ),
