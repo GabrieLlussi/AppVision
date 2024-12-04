@@ -27,6 +27,10 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     initSpeech();
   }
 
+  Future<void> _speakProductName(String productName) async {
+    await _flutterTts.speak(productName);
+  }
+
   void _addToCart(BuildContext context) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -37,9 +41,12 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
       SnackBar(
           content: Text('${widget.produto['nome']} adicionado ao carrinho')),
     );
+
+    // Lê o nome do produto e informa que foi adicionado ao carrinho
+    await _speakProductName(
+        "O produto ${widget.produto['nome']} foi adicionado ao carrinho.");
   }
 
-  //Leitura da descrição
   Future<void> _falarDescricao(String texto) async {
     if (_isSpeaking) {
       await _flutterTts.stop();
@@ -54,7 +61,6 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     }
   }
 
-  //Solicitar permissão do microfone
   void _requestMicrophonePermission() async {
     var status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
@@ -62,7 +68,6 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     }
   }
 
-  //Lógica de reconhecimento de voz
   void initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
     setState(() {});
@@ -101,9 +106,8 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     if (comand.contains("detalhes")) {
       String descricaoCompleta = '${widget.produto['nome']}.'
           'Preço: R\$${widget.produto['preco']}.'
-          'Peso: ${widget.produto['peso']}gramas.'
+          'Peso: ${widget.produto['peso']} gramas.'
           '${widget.produto['descricao'] ?? 'Descrição não disponível'}.';
-
       _falarDescricao(descricaoCompleta);
       _stopListening();
     }
@@ -121,14 +125,12 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
   Future<void> _removeFromCart(BuildContext context) async {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
-    // Verificar se o produto está no carrinho
     var carrinhoSnapshot = await firestore
         .collection('carrinho')
         .where('id', isEqualTo: widget.produto['id'])
         .get();
 
     if (carrinhoSnapshot.docs.isNotEmpty) {
-      // Remove o produto do carrinho
       for (var doc in carrinhoSnapshot.docs) {
         await firestore.collection('carrinho').doc(doc.id).delete();
       }
@@ -289,20 +291,19 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
         ],
       ),
       floatingActionButton: SizedBox(
-        width: 120, // Largura maior
-        height: 120, // Altura maior
+        width: 120,
+        height: 120,
         child: FloatingActionButton(
           onPressed:
               _speechToText.isListening ? _stopListening : _startListening,
           tooltip: 'Listen',
           child: Icon(
-            _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
-            color: Colors.white,
-            size: 70, // Ajuste o tamanho do ícone conforme necessário
+            _speechToText.isListening ? Icons.mic : Icons.mic_none,
+            size: 50,
           ),
-          backgroundColor: Colors.transparent,
         ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }

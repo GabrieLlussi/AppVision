@@ -20,7 +20,7 @@ class _CarrinhoState extends State<Carrinho> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _wordsSpoken = "";
-  final FlutterTts _flutterTts = FlutterTts();
+  final FlutterTts _flutterTts = FlutterTts(); // Instância do FlutterTts
 
   @override
   void initState() {
@@ -29,7 +29,7 @@ class _CarrinhoState extends State<Carrinho> {
     initSpeech();
   }
 
-  //Solicitar permissão do microfone
+  // Solicitar permissão do microfone
   void _requestMicrophonePermission() async {
     var status = await Permission.microphone.request();
     if (status != PermissionStatus.granted) {
@@ -37,7 +37,7 @@ class _CarrinhoState extends State<Carrinho> {
     }
   }
 
-  //Lógica de reconhecimento de voz
+  // Lógica de reconhecimento de voz
   void initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
     setState(() {});
@@ -67,14 +67,23 @@ class _CarrinhoState extends State<Carrinho> {
       _flutterTts.speak(
           "O valor total do carrinho é de R\$ ${total.toStringAsFixed(2)}");
       _stopListening();
-    }
-      else if (comand.contains("limpe")) {
-        await _clearCarrinho();
-        _flutterTts.speak("Todos os itens foram removidos do carrinho");
-        _stopListening();
-      }
-     else if (comand.contains("pare")) {
+    } else if (comand.contains("limpe")) {
+      await _clearCarrinho();
+      _flutterTts.speak("Todos os itens foram removidos do carrinho");
       _stopListening();
+    } else if (comand.contains("pare")) {
+      _stopListening();
+    }
+  }
+
+  // Nova função para texto a fala
+  Future<void> _speakProductName(String productName) async {
+    try {
+      await _flutterTts.setLanguage("pt-BR");
+      await _flutterTts.setSpeechRate(0.5);
+      await _flutterTts.speak("O produto $productName foi removido do carrinho");
+    } catch (e) {
+      print("Erro ao executar TTS: $e");
     }
   }
 
@@ -105,10 +114,12 @@ class _CarrinhoState extends State<Carrinho> {
   Future<void> _removeFromCart(String id) async {
     try {
       FirebaseFirestore firebase = FirebaseFirestore.instance;
+      final produto = carrinho.firstWhere((item) => item['id'] == id);
       await firebase.collection('carrinho').doc(id).delete();
       setState(() {
         carrinho.removeWhere((produto) => produto['id'] == id);
       });
+      await _speakProductName(produto['nome']); // Chamada do TTS ao remover item
     } catch (e) {
       print("Erro ao remover produto do carrinho: $e");
     }
