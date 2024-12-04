@@ -96,7 +96,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TelaDetalhes(produto: produto),
+            builder: (context) => TelaDetalhes(produto: produto, supermercadoID: widget.supermercadoID,),
           ),
         );
       } else {
@@ -228,7 +228,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => TelaDetalhes(produto: produto),
+                                      builder: (context) => TelaDetalhes(produto: produto, supermercadoID: widget.supermercadoID,),
                                     ),
                                   );
                                 },

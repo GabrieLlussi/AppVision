@@ -7,8 +7,10 @@ import 'package:speech_to_text/speech_to_text.dart';
 
 class TelaDetalhes extends StatefulWidget {
   final Map<String, dynamic> produto;
+  final String supermercadoID;
+  
 
-  TelaDetalhes({Key? key, required this.produto}) : super(key: key);
+  TelaDetalhes({Key? key, required this.produto, required this.supermercadoID}) : super(key: key);
 
   @override
   _TelaDetalhesState createState() => _TelaDetalhesState();
@@ -25,6 +27,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
   void initState() {
     super.initState();
     initSpeech();
+    print("Supermercado ID recebido: ${widget.supermercadoID}");
   }
 
   Future<void> _speakProductName(String productName) async {
@@ -35,13 +38,26 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
     FirebaseFirestore firestore = FirebaseFirestore.instance;
 
     // Adiciona o produto atual ao carrinho
-    await firestore.collection('carrinho').add(widget.produto);
+    await firestore.collection('carrinho').add(widget.produto, );
 
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
           content: Text('${widget.produto['nome']} adicionado ao carrinho')),
     );
 
+
+void _addToCart(Map<String, dynamic> produto) async {
+    FirebaseFirestore firestore = FirebaseFirestore.instance;
+
+    await firestore.collection('carrinho').add({
+      ...produto,
+      'supermercado': widget.supermercadoID,
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${produto['nome']} adicionado ao carrinho')),
+    );
+  }
     // Lê o nome do produto e informa que foi adicionado ao carrinho
     await _speakProductName(
         "O produto ${widget.produto['nome']} foi adicionado ao carrinho.");
@@ -96,7 +112,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => Carrinho(supermercadoID: 'supermercadoID')),
+            builder: (context) => Carrinho(supermercadoID: widget.supermercadoID)),
       );
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Acessando carrinho')),
@@ -247,7 +263,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  Carrinho(supermercadoID: 'supermercadoID')),
+                                  Carrinho(supermercadoID: widget.supermercadoID)),
                         );
                       },
                       icon: Icon(Icons.shopping_cart,

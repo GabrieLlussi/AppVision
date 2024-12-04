@@ -24,7 +24,7 @@ void main() async {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Vision plus',
+      title: 'Vision plus +',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
