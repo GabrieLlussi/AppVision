@@ -15,7 +15,7 @@
     <application
         android:label="Vision+"
         android:name="${applicationName}"
-        android:icon="@mipmap/visionPlusIcon">
+        android:icon="@mipmap/visionplusicon">
 
 
         <provider
