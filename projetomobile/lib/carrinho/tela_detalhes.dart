@@ -207,7 +207,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                     Text(
                       'R\$${widget.produto['preco']}',
                       style: TextStyle(
-                        fontSize: 24 * preferredFontSize,
+                        fontSize: 30 * preferredFontSize,
                         fontWeight: FontWeight.bold,
                         color: const Color.fromRGBO(0, 131, 22, 1),
                       ),
@@ -215,7 +215,7 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
                     Text(
                       '${widget.produto['peso']}g',
                       style: TextStyle(
-                        fontSize: 24 * preferredFontSize,
+                        fontSize: 30 * preferredFontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.amber,
                       ),
@@ -298,12 +298,13 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
               _speechToText.isListening ? _stopListening : _startListening,
           tooltip: 'Listen',
           child: Icon(
-            _speechToText.isListening ? Icons.mic : Icons.mic_none,
-            size: 50,
+            _speechToText.isNotListening ? Icons.mic_off : Icons.mic,
+            color: Colors.white,
+            size: 70,
           ),
+          backgroundColor: Colors.transparent,
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
