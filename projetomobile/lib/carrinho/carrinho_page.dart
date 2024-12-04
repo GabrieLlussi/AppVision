@@ -213,7 +213,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
                           Text(
                             produto['nome'],
                             style: const TextStyle(
-                              fontSize: 44.0,
+                              fontSize: 30.0,
                               fontWeight: FontWeight.bold,
                               color: Color.fromARGB(255, 0, 0, 0),
                             ),
