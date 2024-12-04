@@ -67,7 +67,7 @@ class _HomePageState extends State<HomePage> {
   //Logica para o tutorial
   Future<void> _startTutorial() async {
     TTSHelper.setText(
-      "Tutorial de ajuda: Botão azul vai para a tela de detalhes, Botões roxos levam para a tela de carrinho e o Botão verde adiciona produtos ao carrinho"
+      "Tutorial de ajuda: Botão azul vai para a tela de detalhes, Botões roxos levam para a tela de carrinho e o Botão verde adiciona produtos ao carrinho,, OU USE COMANDOS DE VOZ,, Fale adicionar, para adicionar o produto ao carrinho, fale carrinho, para direcionar ao carrinho, fale remover, para remover o produto do carrinho e fale limpar, para excluir tudo do carrinho"
     );
     await TTSHelper.speak();
   }
