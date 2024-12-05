@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:projetomobile/carrinho/carrinho.dart';
 import 'package:speech_to_text/speech_to_text.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 class TelaDetalhes extends StatefulWidget {
   final Map<String, dynamic> produto;
@@ -21,6 +22,9 @@ class _TelaDetalhesState extends State<TelaDetalhes> {
   bool _speechEnabled = false;
   bool _isSpeaking = false;
   String _wordsSpoken = "";
+  MobileScannerController scannerController = MobileScannerController();
+  bool isScanning = true;
+  DateTime? lastScanTime;
   final FlutterTts _flutterTts = FlutterTts();
 
   @override
@@ -162,10 +166,32 @@ void _addToCart(Map<String, dynamic> produto) async {
     }
   }
 
+  //Leitor de código de barras
+   void _onBarcodeDetected(BarcodeCapture capture) async {
+    if (!isScanning || capture.barcodes.isEmpty) return;
+
+    final now = DateTime.now();
+    if (lastScanTime != null &&
+        now.difference(lastScanTime!) < Duration(seconds : 5)) {
+          return;
+      }
+      lastScanTime = now;
+    
+    setState(() {
+      isScanning = false; //Pause o scanner para evitar múltiplas leituras
+    });
+
+    final code = capture.barcodes.first.rawValue;
+    if (code == null) {
+      setState(() {
+        isScanning = true;
+      });
+      return;
+    } 
+   }
   @override
   Widget build(BuildContext context) {
     double preferredFontSize = MediaQuery.of(context).textScaleFactor;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -177,6 +203,16 @@ void _addToCart(Map<String, dynamic> produto) async {
       ),
       body: Stack(
         children: [
+          MobileScanner(
+            controller: scannerController,
+            fit: BoxFit.cover,
+            onDetect: _onBarcodeDetected,
+          ),
+          Container(
+            color: Colors.white,
+            width: double.infinity,
+            height: double.infinity,
+          ),
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: Column(

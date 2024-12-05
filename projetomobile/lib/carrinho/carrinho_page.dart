@@ -23,6 +23,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   final SpeechToText _speechToText = SpeechToText();
   bool _speechEnabled = false;
   String _wordsSpoken = "";
+  DateTime? lastScanTime;
 
   @override
   void initState() {
@@ -79,36 +80,55 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
   void _onBarcodeDetected(BarcodeCapture capture) async {
     if (!isScanning || capture.barcodes.isEmpty) return;
 
-    final code = capture.barcodes.first.rawValue;
-    if (code == null) return;
-
+    final now = DateTime.now();
+    if (lastScanTime != null &&
+        now.difference(lastScanTime!) < Duration(seconds : 5)) {
+          return;
+      }
+      lastScanTime = now;
+    
     setState(() {
       isScanning = false; //Pause o scanner para evitar múltiplas leituras
     });
 
-    FirebaseFirestore.instance
+    final code = capture.barcodes.first.rawValue;
+    if (code == null) {
+      setState(() {
+        isScanning = true;
+      });
+      return;
+    } 
+
+  
+    try{
+      final snapshot = await FirebaseFirestore.instance
         .collection('produto')
         .where('codigoBarras', isEqualTo: code)
-        .get()
-        .then((QuerySnapshot snapshot) {
+        .get();
+        
       if (snapshot.docs.isNotEmpty) {
         final produto = snapshot.docs[0].data() as Map<String, dynamic>;
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => TelaDetalhes(produto: produto, supermercadoID: widget.supermercadoID,),
-          ),
-        );
+        if(context.mounted){}
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TelaDetalhes(produto: produto, supermercadoID: widget.supermercadoID,),
+            ),
+          );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Produto não encontrado')),
         );
       }
-
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro ao buscar produtos: $e')),
+      );
+    } finally {
       setState(() {
         isScanning = true;
       });
-    });
+    }    
   }
 
   //Logica para reconhecimento de voz
