@@ -93,6 +93,10 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
         .then((QuerySnapshot snapshot) {
       if (snapshot.docs.isNotEmpty) {
         final produto = snapshot.docs[0].data() as Map<String, dynamic>;
+
+      // Feedback por voz com o nome do produto
+      flutterTts.speak('Produto encontrado: ${produto['nome']}');
+
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -102,6 +106,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Produto não encontrado')),
+          
         );
       }
 
@@ -111,7 +116,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     });
   }
 
-  //Logica para reconhecimento de voz
   //Lógica de reconhecimento de voz
   void initSpeech() async {
     _speechEnabled = await _speechToText.initialize();
