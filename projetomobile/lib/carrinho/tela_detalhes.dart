@@ -67,19 +67,26 @@ void _addToCart(Map<String, dynamic> produto) async {
         "O produto ${widget.produto['nome']} foi adicionado ao carrinho.");
   }
 
-  Future<void> _falarDescricao(String texto) async {
+  Future<void> _falarDescricao(String texto, String preco) async {
+  try {
+    double precoConvertido = double.parse(preco);
+    String descricaoCompleta = "Preço: R\$${precoConvertido.toStringAsFixed(2)}. $texto";
+
     if (_isSpeaking) {
       await _flutterTts.stop();
       setState(() {
         _isSpeaking = false;
       });
     } else {
-      await _flutterTts.speak(texto);
+      await _flutterTts.speak(descricaoCompleta);
       setState(() {
         _isSpeaking = true;
       });
     }
+  } catch (e) {
+    print("Erro ao converter o preço: $e");
   }
+}
 
   void _requestMicrophonePermission() async {
     var status = await Permission.microphone.request();
@@ -121,14 +128,6 @@ void _addToCart(Map<String, dynamic> produto) async {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Acessando carrinho')),
       );
-      _stopListening();
-    }
-    if (comand.contains("detalhes")) {
-      String descricaoCompleta = '${widget.produto['nome']}.'
-          'Preço: R\$${widget.produto['preco']}.'
-          'Peso: ${widget.produto['peso']} gramas.'
-          '${widget.produto['descricao'] ?? 'Descrição não disponível'}.';
-      _falarDescricao(descricaoCompleta);
       _stopListening();
     }
     if (comand.contains("remover")) {
@@ -219,8 +218,9 @@ void _addToCart(Map<String, dynamic> produto) async {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 GestureDetector(
-                  onTap: () => _falarDescricao(widget.produto['descricao'] ??
-                      'Descrição não disponível'),
+                  onTap: () => _falarDescricao(widget.produto['descricao'] ??'Descrição não disponível',
+                  widget.produto['preco'].toString(),
+                  ),
                   child: SizedBox(
                     height: 350,
                     width: double.infinity,

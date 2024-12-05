@@ -118,6 +118,7 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Produto não encontrado')),
+          
         );
       }
     } catch (e) {
@@ -131,7 +132,6 @@ class _CarrinhoPageState extends State<CarrinhoPage> {
     }    
   }
 
-  //Logica para reconhecimento de voz
   //Lógica de reconhecimento de voz
   void initSpeech() async {
     _speechEnabled = await _speechToText.initialize();

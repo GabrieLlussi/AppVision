@@ -67,7 +67,7 @@ class _CarrinhoState extends State<Carrinho> {
       _flutterTts.speak(
           "O valor total do carrinho é de R\$ ${total.toStringAsFixed(2)}");
       _stopListening();
-    } else if (comand.contains("limpe")) {
+    } else if (comand.contains("limpar")) {
       await _clearCarrinho();
       _flutterTts.speak("Todos os itens foram removidos do carrinho");
       _stopListening();
@@ -230,7 +230,9 @@ class _CarrinhoState extends State<Carrinho> {
             padding: const EdgeInsets.all(15.0),
             child: ElevatedButton(
               onPressed: () {
-                // Lógica para finalizar a compra
+                double total = _calcularTotal();
+                _flutterTts.speak(
+          "O valor total do carrinho é de R\$ ${total.toStringAsFixed(2)}");
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color.fromARGB(255, 55, 117, 199),
@@ -239,6 +241,7 @@ class _CarrinhoState extends State<Carrinho> {
               ),
               child: const Text(
                 'Finalizar Compra',
+                
                 style: TextStyle(
                   fontSize: 30,
                   color: Colors.black,
